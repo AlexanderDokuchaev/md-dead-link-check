@@ -1,0 +1,8 @@
+-   id: md-dead-link-check
+    name: Markdown dead link check
+    description: Scans markdown files for invalid links.
+    files: '.*md$'
+    entry: md-dead-link-check --hook
+    language: python
+    types: [markdown]
+    require_serial: true

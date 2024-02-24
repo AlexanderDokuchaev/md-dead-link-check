@@ -1,0 +1,80 @@
+[project]
+name = "md_dead_link_check"
+description = "This is a lightweight and fast tool to help you keep your Markdown files free of broken links."
+readme = "README.md"
+version = "0.1"
+license = {file = "LICENSE"}
+requires-python = ">= 3.8"
+dependencies = [
+  "toml==0.10.2",
+  "GitPython==3.1.42",
+  "aiohttp==3.9.3"
+]
+keywords = [
+  "markdown",
+  "link checker",
+  "dead link",
+  "dead link checker",
+  "broken link",
+  "broken link checker",
+  "link health",
+  "documentation maintenance",
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
+
+[project.urls]
+Homepage = "https://github.com/AlexanderDokuchaev/md-dead-link-check"
+Repository = "https://github.com/AlexanderDokuchaev/md-dead-link-check.git"
+Issues = "https://github.com/AlexanderDokuchaev/md-dead-link-check/issues"
+
+[project.optional-dependencies]
+dev = [
+  "pytest==7.4.3",
+  "pre-commit==3.2.2"
+]
+lint = [
+  "black==24.2.0",
+  "isort==5.13.2",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.sdist]
+only-include = ["md_dead_link_check"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["md_dead_link_check"]
+
+[project.scripts]
+md-dead-link-check = 'md_dead_link_check.__main__:main'
+
+[tool.black]
+line-length = 120
+
+[tool.isort]
+line_length = 120
+force_single_line = true
+profile = "black"
+single_line_exclusions = "typing"
+
+[tool.mypy]
+follow_imports = "silent"
+strict = true
+explicit_package_bases = true
+ignore_missing_imports = true
+
+[tool.md_dead_link_check]
+exclude_files = [
+  "tests/test_md_files/fail.md"
+]
