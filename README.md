@@ -24,9 +24,8 @@ File: tests/test_md_files/fail.md:13 • Link: a.md#fail • Error: Not found fr
 
 ### From pip
 
-```python
+```bash
 pip install md-dead-link-check
-cd <git_repository_directory>
 md-dead-link-check
 ```
 
@@ -35,10 +34,10 @@ md-dead-link-check
 Adding to your .pre-commit-config.yaml
 
 ```yaml
--   repo: https://github.com/AlexanderDokuchaev/md-dead-link-check
+  - repo: https://github.com/AlexanderDokuchaev/md-dead-link-check
     rev: v0.1.0
     hooks:
-    -   id: md-dead-link-check
+      - id: md-dead-link-check
 ```
 
 ### From github repo
@@ -47,7 +46,6 @@ Adding to your .pre-commit-config.yaml
 git clone https://github.com/AlexanderDokuchaev/md-dead-link-check
 cd md-dead-link-check
 pip install .
-cd <git_repository_directory>
 md-dead-link-check
 ```
 
