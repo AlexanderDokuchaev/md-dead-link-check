@@ -36,7 +36,7 @@ Adding to your .pre-commit-config.yaml
 
 ```yaml
 -   repo: https://github.com/AlexanderDokuchaev/md-dead-link-check
-    rev: v0.1
+    rev: v0.1.0
     hooks:
     -   id: md-dead-link-check
 ```
