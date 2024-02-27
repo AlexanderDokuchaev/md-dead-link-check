@@ -31,6 +31,7 @@ def get_config(root_dir: Path, config_path: Optional[Path]) -> Config:
                 setattr(config, key, value)
             else:
                 raise ConnectionError(
-                    f"Unexpected config key `{key}` in pyproject.toml. Available keys: [{', '.join(config.__annotations__)}]"
+                    f"Unexpected config key `{key}` in {config_path.name}. "
+                    f"Available keys: [{', '.join(config.__annotations__)}]"
                 )
     return config

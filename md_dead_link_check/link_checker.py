@@ -31,6 +31,9 @@ class StatusInfo:
 
 
 def get_proxies(env: Mapping[str, Any]) -> Dict[str, Optional[str]]:
+    """
+    Find proxies in environment.
+    """
     return {
         "http": env.get("http_proxy", env.get("HTTP_PROXY")),
         "https": env.get("https_proxy", env.get("HTTPS_PROXY")),
@@ -38,6 +41,9 @@ def get_proxies(env: Mapping[str, Any]) -> Dict[str, Optional[str]]:
 
 
 def select_proxy(url: str, proxies: Dict[str, Optional[str]]) -> Optional[str]:
+    """
+    Select proxy setting by type by suffix of url.
+    """
     if url.startswith("https://"):
         proxy = proxies.get("https")
     else:
@@ -48,6 +54,11 @@ def select_proxy(url: str, proxies: Dict[str, Optional[str]]) -> Optional[str]:
 async def process_link(
     link_info: LinkInfo, session: ClientSession, proxies: Dict[str, Optional[str]], timeout: int
 ) -> StatusInfo:
+    """
+    Asynchronously processes a link to check its status and gather information.
+    Timeout is not interpolated as error, because timeout often occur due to temporary server issues and
+    retrying the request might be more appropriate than treating it as an immediate failure.
+    """
     try:
         proxy = select_proxy(link_info.link, proxies)
         headers = {"User-Agent": "Mozilla/5.0"}
@@ -72,7 +83,7 @@ async def async_check_links(links: list[LinkInfo], config: Config) -> List[Statu
     proxies = get_proxies(os.environ)
     async with ClientSession() as session:
         ret = await asyncio.gather(*[process_link(li, session, proxies, config.timeout) for li in links])
-    return sorted(ret)
+    return ret
 
 
 def check_web_links(md_data: Dict[str, MarkdownInfo], config: Config, files: List[str]) -> List[StatusInfo]:
@@ -125,7 +136,6 @@ def check_path_links(md_data: Dict[str, MarkdownInfo], root_dir: Path, config: C
 
                 if res_path.as_posix() not in md_data:
                     if not abs_path.exists():
-                        # check not md file
                         ret.append(StatusInfo(md_link, "Path does not exist"))
                     continue
 
@@ -133,7 +143,7 @@ def check_path_links(md_data: Dict[str, MarkdownInfo], root_dir: Path, config: C
                     ret.append(StatusInfo(md_link, "Not found fragment"))
                     continue
             ret.append(StatusInfo(md_link, None))
-    return sorted(ret)
+    return ret
 
 
 def check_all_links(
@@ -143,4 +153,4 @@ def check_all_links(
     if config.check_web_links:
         status_list.extend(check_web_links(md_data, config, files))
     status_list.extend(check_path_links(md_data, root_dir, config))
-    return status_list
+    return sorted(status_list)

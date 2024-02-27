@@ -22,11 +22,15 @@ File: tests/test_md_files/fail.md:13 • Link: a.md#fail • Error: Not found fr
 
 ## Usage
 
-### From pip
+### Github action
 
-```bash
-pip install md-dead-link-check
-md-dead-link-check
+```yaml
+jobs:
+  md-dead-link-check:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: AlexanderDokuchaev/md-dead-link-check@main
 ```
 
 ### Pre-commit hook
@@ -35,12 +39,19 @@ Adding to your .pre-commit-config.yaml
 
 ```yaml
   - repo: https://github.com/AlexanderDokuchaev/md-dead-link-check
-    rev: v0.1.0
+    rev: main
     hooks:
       - id: md-dead-link-check
 ```
 
-### From github repo
+### Install rom pip
+
+```bash
+pip install md-dead-link-check
+md-dead-link-check
+```
+
+### Install github repo
 
 ```bash
 git clone https://github.com/AlexanderDokuchaev/md-dead-link-check
