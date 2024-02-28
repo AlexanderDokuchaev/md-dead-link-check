@@ -28,3 +28,5 @@ Some text
 [b](./b.md) [d.a](b.md) `[A+B](A)`
 [d.a](./d/a.md)
 [d.a](/tests/test_md_files/d/a.md)
+
+### Header with `quotes` and $math$

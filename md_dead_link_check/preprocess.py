@@ -78,15 +78,15 @@ def process_md_file(path: Path, root_dir: Path) -> MarkdownInfo:
             if in_code_block:
                 continue
 
-            # Skip $ and ` tags
-            line = re.sub(RE_SUB, "", line)
-
             # Detect headers
             res = re.match(RE_HEADER, line)
             if res:
                 fragment = process_header_to_fragment(res.group(1))
                 fragments.append(fragment)
                 continue
+
+            # Skip $ and ` tags
+            line = re.sub(RE_SUB, "", line)
 
             # Detect links
             matches = re.findall(RE_LINK, line)

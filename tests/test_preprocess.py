@@ -30,6 +30,7 @@ def test_find_all_markdowns_in_repo():
         ("Header 1", "header-1"),
         ("C++ ext", "c-ext"),
         ("H_I (H)", "h_i-h"),
+        ("A `quotes` f", "a-quotes-f"),
     ),
 )
 def test_process_header_to_fragment(header, fragment):
@@ -47,6 +48,7 @@ def test_process_md_file():
         "formula",
         "grave",
         "links",
+        "header-with-quotes-and-math",
     ]
 
     ref_links = [
