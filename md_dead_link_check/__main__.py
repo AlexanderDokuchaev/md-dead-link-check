@@ -10,7 +10,7 @@ from md_dead_link_check.link_checker import check_all_links
 from md_dead_link_check.preprocess import preprocess_repository
 
 
-def summary(status: List[StatusInfo]) -> int:
+def summary(status: List[StatusInfo], verbose: bool) -> int:
     """
     Print summary.
     Returns 0 if not found any error, otherwise 1.
@@ -20,6 +20,8 @@ def summary(status: List[StatusInfo]) -> int:
         if x.err_msg:
             print(f"File: {x.link_info.get_location()} • Link: {x.link_info.link} • Error: {x.err_msg} ")
             err_nums += 1
+        if verbose:
+            print(f"File: {x.link_info.get_location()} • Link: {x.link_info.link} • OK ")
 
     if err_nums:
         cat_repeat = max(min(err_nums // 10, 5), 1)
@@ -34,6 +36,7 @@ def args_parser() -> Namespace:
     parser = ArgumentParser(description="Markdown dead link checker")
     parser.add_argument("--config", type=Path, help="Path to config file.")
     parser.add_argument("--hook", action="store_true", help="Run program in pre-commit hook.")
+    parser.add_argument("--verbose", "-v", action="store_true", help="Print all links in summary.")
     parser.add_argument("files", nargs="*", help="List of file to check. If empty will check all markdown files.")
     return parser.parse_args()
 
@@ -59,7 +62,7 @@ def main() -> int:
         files = list(md_data)
 
     status_list = check_all_links(md_data, config, repo_dir, files)
-    err_num = summary(status_list)
+    err_num = summary(status_list, args.verbose)
 
     return min(err_num, 1)
 
