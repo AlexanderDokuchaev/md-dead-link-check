@@ -1,54 +1,43 @@
-import os
 from argparse import ArgumentParser
 from argparse import Namespace
+from argparse import RawTextHelpFormatter
 from pathlib import Path
-from typing import List
 
 from md_dead_link_check.config import get_config
-from md_dead_link_check.link_checker import StatusInfo
+from md_dead_link_check.helpers import normalize_files
+from md_dead_link_check.helpers import summary
 from md_dead_link_check.link_checker import check_all_links
 from md_dead_link_check.preprocess import preprocess_repository
 
 
-def summary(status: List[StatusInfo], verbose: bool) -> int:
-    """
-    Print summary.
-    Returns 0 if not found any error, otherwise 1.
-    """
-    err_nums = 0
-    for x in status:
-        if x.err_msg:
-            print(f"File: {x.link_info.get_location()} • Link: {x.link_info.link} • Error: {x.err_msg} ")
-            err_nums += 1
-        if verbose:
-            print(f"File: {x.link_info.get_location()} • Link: {x.link_info.link} • OK ")
-
-    if err_nums:
-        cat_repeat = max(min(err_nums // 10, 5), 1)
-        print(f"❌ Found {err_nums} dead link{'s' if err_nums >1 else ''}" + " 🙀" * cat_repeat)
-        return 1
-    else:
-        print("✅ Not found dead links 😸")
-        return 0
-
-
 def args_parser() -> Namespace:
-    parser = ArgumentParser(description="Markdown dead link checker")
-    parser.add_argument("--config", type=Path, help="Path to config file.")
-    parser.add_argument("--hook", action="store_true", help="Run program in pre-commit hook.")
+    parser = ArgumentParser(
+        description="Checks for broken links (dead links) in a Markdown file within a Git repository.",
+        formatter_class=RawTextHelpFormatter,
+    )
+    parser.add_argument(
+        "files",
+        nargs="*",
+        help=(
+            "List of files to check for web links."
+            "\nIf no files are provided (empty list) and the --hook flag is not used, "
+            "then all markdown files in the current directory will be checked."
+            "\nNote: Internal links within the files will always be checked, regardless of the "
+            "provided files, to detect broken links to removed files."
+        ),
+    )
+    parser.add_argument("--config", "-c", type=Path, help="Path to config file.")
+    parser.add_argument(
+        "--hook",
+        action="store_true",
+        help=(
+            "Run program in pre-commit hook. If not pass list of files, web links will no check, "
+            "by default will check in all files."
+        ),
+    )
     parser.add_argument("--verbose", "-v", action="store_true", help="Print all links in summary.")
-    parser.add_argument("files", nargs="*", help="List of file to check. If empty will check all markdown files.")
+    parser.add_argument("--no-color", "-nc", action="store_true", help="Disable coloring of output.")
     return parser.parse_args()
-
-
-def normalize_files(files: List[str], repo_dir: Path) -> List[str]:
-    """
-    Set file names to relative git root directory.
-    """
-    cwd = Path(os.getcwd())
-    if cwd != repo_dir:
-        return [(cwd / f).resolve().relative_to(repo_dir).as_posix() for f in files]
-    return files
 
 
 def main() -> int:
@@ -62,7 +51,7 @@ def main() -> int:
         files = list(md_data)
 
     status_list = check_all_links(md_data, config, repo_dir, files)
-    err_num = summary(status_list, args.verbose)
+    err_num = summary(status_list, args.verbose, args.no_color)
 
     return min(err_num, 1)
 
