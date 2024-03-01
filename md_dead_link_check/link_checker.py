@@ -61,10 +61,7 @@ async def process_link(
     """
     try:
         proxy = select_proxy(link_info.link, proxies)
-        headers = {"User-Agent": "Mozilla/5.0"}
-        response = await session.head(
-            link_info.link, allow_redirects=True, proxy=proxy, headers=headers, timeout=timeout
-        )
+        response = await session.head(link_info.link, allow_redirects=True, proxy=proxy, timeout=timeout)
         response.raise_for_status()
     except ClientResponseError as e:
         if e.status in CATCH_RESPONSE_STATUS:
