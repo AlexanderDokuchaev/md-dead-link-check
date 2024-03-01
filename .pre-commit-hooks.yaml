@@ -6,3 +6,4 @@
     language: python
     types: [markdown]
     require_serial: true
+    always_run: True
