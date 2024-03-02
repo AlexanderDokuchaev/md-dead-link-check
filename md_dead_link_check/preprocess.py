@@ -9,7 +9,7 @@ from typing import Dict, List, Tuple
 from git import Repo
 
 RE_HEADER = r"^[#]{1,6}\s*(.*)"
-RE_LINK = r"\[.*?\]\((.*?)\)"
+RE_LINK = r"([!]{0,1})\[[^\]]*\]\((([^\s)]+)(?:\s*(.*?))?)\)"
 RE_ID = r"<a\s+id=[\"'](.*)[\"']>.*?<\/a>"
 RE_SUB = r"[$`][^`]+?[$`]"
 
@@ -91,8 +91,13 @@ def process_md_file(path: Path, root_dir: Path) -> MarkdownInfo:
             # Detect links
             matches = re.findall(RE_LINK, line)
             if matches:
-                for link in matches:
-                    links.append(LinkInfo(link, path, line_num))
+                for image_prefix, full_link, img_link, _ in matches:
+                    if image_prefix:
+                        # for image ![img](img_link "name")
+                        links.append(LinkInfo(img_link, path, line_num))
+                    else:
+                        # for link [link](img_link)
+                        links.append(LinkInfo(full_link, path, line_num))
 
             # Detect id
             matches = re.findall(RE_ID, line)
