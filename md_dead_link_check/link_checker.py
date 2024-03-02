@@ -128,7 +128,11 @@ def check_path_links(md_data: Dict[str, MarkdownInfo], root_dir: Path, config: C
                         abs_path = (md_abs_path.parent / split_result.path).resolve()
                         res_path = abs_path.relative_to(root_dir)
                 except ValueError:
-                    ret.append(StatusInfo(md_link, "Incorrect path"))
+                    ret.append(StatusInfo(md_link, "Path is not within git repository"))
+                    continue
+
+                if abs_path.as_posix() != abs_path.resolve().as_posix():
+                    ret.append(StatusInfo(md_link, "Path is not within git repository"))
                     continue
 
                 if res_path.as_posix() not in md_data:
