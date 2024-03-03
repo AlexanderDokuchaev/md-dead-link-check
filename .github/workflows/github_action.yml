@@ -1,4 +1,4 @@
-name: Test GitHub Action
+name: GitHub Action
 
 on:
   push:

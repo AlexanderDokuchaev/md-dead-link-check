@@ -1,4 +1,4 @@
-name: Test Ubuntu
+name: Ubuntu
 
 on:
   push:
@@ -37,5 +37,5 @@ jobs:
         run: pip install .[dev]
       - name: Pytest
         run: pytest tests -rfs -vv
-      - name:
+      - name: Run
         run: md-dead-link-check -v
