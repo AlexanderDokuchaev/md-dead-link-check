@@ -1,28 +1,41 @@
 import os
+import sys
 from pathlib import Path
-from typing import Dict, List
+from typing import List
 
 from md_dead_link_check.link_checker import StatusInfo
 
 
-class Colors:
+class SpecSymbols:
+    __slots__ = ["blue", "green", "yellow", "red", "clean", "ok", "fail", "split", "cat_ok", "cat_fail"]
+
     def __init__(self) -> None:
-        self.data: Dict[str, str] = {}
         self.enable()
 
-    def __getattr__(self, attr: str) -> str:
-        return self.data[attr]
-
     def enable(self) -> None:
-        self.data["blue"] = "\033[1;94m"
-        self.data["green"] = "\033[1;92m"
-        self.data["yellow"] = "\033[1;93m"
-        self.data["red"] = "\033[1;91m"
-        self.data["clean"] = "\033[0m"
+        self.blue = "\033[1;94m"
+        self.green = "\033[1;92m"
+        self.yellow = "\033[1;93m"
+        self.red = "\033[1;91m"
+        self.clean = "\033[0m"
 
-    def disable(self) -> None:
-        for key in self.data:
-            self.data[key] = ""
+        if sys.platform.startswith("win"):
+            self.split = "-"
+            self.ok = ""
+            self.fail = ""
+            self.cat_fail = ""
+            self.cat_ok = ""
+        else:
+            self.split = "•"
+            self.ok = "✅ "
+            self.fail = "❌ "
+            self.cat_fail = " 🙀"
+            self.cat_ok = " 😸"
+
+    def disable_colors(self) -> None:
+        for key in self.__slots__:
+            if key not in ["split"]:
+                setattr(self, key, "")
 
 
 def summary(status: List[StatusInfo], verbose: bool, no_color: bool) -> int:
@@ -30,30 +43,30 @@ def summary(status: List[StatusInfo], verbose: bool, no_color: bool) -> int:
     Print summary.
     Returns 0 if not found any error, otherwise 1.
     """
-    color = Colors()
+    specs = SpecSymbols()
     if no_color:
-        color.disable()
+        specs.disable_colors()
     err_nums = 0
     for x in status:
         link_msg = (
-            f"{color.blue}File:{color.clean} {x.link_info.get_location()}"
-            f" • {color.blue}Link:{color.clean} {x.link_info.link}"
+            f"{specs.blue}File:{specs.clean} {x.link_info.get_location()}"
+            f" {specs.split} {specs.blue}Link:{specs.clean} {x.link_info.link}"
         )
         if x.err_msg:
-            print(f"{link_msg} • {color.red}Error{color.clean}: {x.err_msg}")
+            print(f"{link_msg} {specs.split} {specs.red}Error{specs.clean}: {x.err_msg}")
             err_nums += 1
         elif verbose:
             if x.warn_msg is None:
-                print(f"{link_msg} • {color.green}OK{color.clean}")
+                print(f"{link_msg} {specs.split} {specs.green}OK{specs.clean}")
             else:
-                print(f"{link_msg} • {color.yellow}Warn{color.clean}: {x.warn_msg}")
+                print(f"{link_msg} {specs.split} {specs.yellow}Warn{specs.clean}: {x.warn_msg}")
 
     if err_nums:
         cat_repeat = 0 if no_color else max(min(err_nums // 10, 5), 1)
-        print(f"❌ Found {err_nums} dead link{'s' if err_nums >1 else ''}" + " 🙀" * cat_repeat)
+        print(f"{specs.fail}Found {err_nums} dead link{'s' if err_nums >1 else ''}" + specs.cat_fail * cat_repeat)
         return 1
     else:
-        print("✅ Not found dead links 😸")
+        print(f"{specs.ok}Not found dead links{specs.cat_ok}")
         return 0
 
 
