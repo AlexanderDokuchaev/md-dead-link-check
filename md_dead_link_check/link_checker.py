@@ -17,6 +17,7 @@ from md_dead_link_check.preprocess import MarkdownInfo
 
 CATCH_RESPONSE_STATUS = [
     404,  # Not found
+    410,  # Gone
     500,  # Internal Server Error (for cannot connect to host under proxy)
 ]
 

@@ -1,5 +1,10 @@
 # Markdown Dead Link Checker
 
+[![GitHub Action](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/github_action.yml/badge.svg)](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/github_action.yml)
+[![Ubuntu](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/ubuntu.yml/badge.svg)](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/ubuntu.yml)
+[![Windows](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/win.yml/badge.svg?branch=main)](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/win.yml)
+[![MacOS](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/mac.yml/badge.svg)](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/mac.yml)
+
 This handy tool helps you maintain the integrity of your Markdown files by identifying broken links.
 It scans your files and detects:
 
@@ -20,18 +25,10 @@ File: tests/test_md_files/fail.md:13 • Link: a.md#fail • Error: Not found fr
 ❌ Found 5 dead links 🙀
 ```
 
-## Performance
-
-This tool utilizes asynchronous API calls and avoids downloading full web pages,
-enabling it to process thousands links in several seconds.
-
-## Proxy
-
-This tool leverages your system's existing HTTP and HTTPS proxy configuration.
-It achieves this by trusting the environment variables that your operating system utilizes to define proxy settings.
-This functionality is enabled by the `aiohttp.ClientSession(trust_env=True)` option.
-For further technical details, you can refer to the
-[aiohttp documentation](https://docs.aiohttp.org/en/v3.9.3/client_advanced.html#proxy-support).
+> [!NOTE]
+> Only error codes like **404 (Not Found)**, **410 (Gone)**, and **500 (Internal Server Error)**,
+> and links that don't exist are considered "dead links". Other error codes,
+> typically indicate temporary issues with the host server.
 
 ## How to Use It
 
@@ -68,6 +65,25 @@ pip install md-dead-link-check
 md-dead-link-check
 ```
 
+## Performance
+
+This tool utilizes asynchronous API calls and avoids downloading full web pages,
+enabling it to process thousands links in several seconds.
+
+## Proxy
+
+This tool leverages your system's existing HTTP and HTTPS proxy configuration.
+It achieves this by trusting the environment variables that your operating system utilizes to define proxy settings.
+This functionality is enabled by the `aiohttp.ClientSession(trust_env=True)` option.
+For further technical details, you can refer to the
+[aiohttp documentation](https://docs.aiohttp.org/en/v3.9.3/client_advanced.html#proxy-support).
+
+> [!WARNING]
+> **Without proxy configuration in environment, link failures may not be reported.**
+> If your environment lacks proxy configuration (variables like `http_proxy` and `https_proxy`),
+> link retrieval attempts may time out without indicating a failure.
+> To help diagnose this issue, use the `--verbose` argument to log all processed links.
+
 ## Configuration
 
 This tool seamlessly integrates with your project's `pyproject.toml` file for configuration.
@@ -78,9 +94,9 @@ To leverage a different file, invoke the `--config` option during execution.
 - exclude_files: Accepts a list of files to exclude from checks. Default: `[]`.
 - check_web_links: Toggle web link checks on or off. Default: `true`.
 
-[!TIP]
-Leverage wildcard patterns ([fnmatch](https://docs.python.org/3/library/fnmatch.html) syntax) for flexible exclusions
-in both `exclude_links` and `exclude_files` lists.
+> [!TIP]
+> Leverage wildcard patterns ([fnmatch](https://docs.python.org/3/library/fnmatch.html) syntax) for flexible exclusions
+> in both `exclude_links` and `exclude_files` lists.
 
 ```toml
 [tool.md_dead_link_check]
