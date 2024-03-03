@@ -16,6 +16,7 @@ class Colors:
     def enable(self) -> None:
         self.data["blue"] = "\033[1;94m"
         self.data["green"] = "\033[1;92m"
+        self.data["yellow"] = "\033[1;93m"
         self.data["red"] = "\033[1;91m"
         self.data["clean"] = "\033[0m"
 
@@ -42,7 +43,10 @@ def summary(status: List[StatusInfo], verbose: bool, no_color: bool) -> int:
             print(f"{link_msg} • {color.red}Error{color.clean}: {x.err_msg}")
             err_nums += 1
         elif verbose:
-            print(f"{link_msg} • {color.green}OK{color.clean}")
+            if x.warn_msg is None:
+                print(f"{link_msg} • {color.green}OK{color.clean}")
+            else:
+                print(f"{link_msg} • {color.yellow}Warn{color.clean}: {x.warn_msg}")
 
     if err_nums:
         cat_repeat = 0 if no_color else max(min(err_nums // 10, 5), 1)

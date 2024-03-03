@@ -25,6 +25,7 @@ CATCH_RESPONSE_STATUS = [
 class StatusInfo:
     link_info: LinkInfo
     err_msg: Optional[str] = None
+    warn_msg: Optional[str] = None
 
     def __lt__(self, other: StatusInfo) -> bool:
         return self.link_info < other.link_info
@@ -42,12 +43,13 @@ async def process_link(link_info: LinkInfo, session: ClientSession, timeout: int
     except ClientResponseError as e:
         if e.status in CATCH_RESPONSE_STATUS:
             return StatusInfo(link_info, f"{e.status}: {e.message}")
+        return StatusInfo(link_info, warn_msg=f"{e.status}: {e.message}")
     except asyncio.CancelledError as e:
         return StatusInfo(link_info, str(e))
     except ClientConnectorError as e:
         return StatusInfo(link_info, str(e))
     except asyncio.TimeoutError:
-        pass
+        return StatusInfo(link_info, warn_msg="TimeoutError")
 
     return StatusInfo(link_info)
 
