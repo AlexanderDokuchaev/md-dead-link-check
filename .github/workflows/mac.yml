@@ -1,0 +1,26 @@
+name: Test MacOS
+
+on:
+  push:
+    branches:
+      - '*'
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+jobs:
+  pytest:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - name: Install package
+        run: pip install .[dev]
+      - name: Pytest
+        run: pytest tests -rfs -vv
+      - name:
+        run: md-dead-link-check -v

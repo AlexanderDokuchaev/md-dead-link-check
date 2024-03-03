@@ -1,4 +1,4 @@
-name: Validation
+name: Test Ubuntu
 
 on:
   push:
@@ -37,36 +37,5 @@ jobs:
         run: pip install .[dev]
       - name: Pytest
         run: pytest tests -rfs -vv
-
-  pytest-win:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
-      - name: Install package
-        run: pip install .[dev]
-      - name: Pytest
-        run: pytest tests -rfs -vv
-
-  pytest-mac:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
-      - name: Install package
-        run: pip install .[dev]
-      - name: Pytest
-        run: pytest tests -rfs -vv
-
-
-  md-dead-link-check:
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
-      - uses: AlexanderDokuchaev/md-dead-link-check@main
-        with:
-          config: pyproject.toml
+      - name:
+        run: md-dead-link-check -v

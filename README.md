@@ -27,8 +27,11 @@ enabling it to process thousands links in several seconds.
 
 ## Proxy
 
-This tool leverages your system's existing HTTP and HTTPS proxy configuration. It achieves this by trusting the environment variables that your operating system utilizes to define proxy settings. This functionality is enabled by the `aiohttp.ClientSession(trust_env=True)` option.
-For further technical details, you can refer to the [aiohttp documentation](https://docs.aiohttp.org/en/stable/client_advanced.html#proxy-support)
+This tool leverages your system's existing HTTP and HTTPS proxy configuration.
+It achieves this by trusting the environment variables that your operating system utilizes to define proxy settings.
+This functionality is enabled by the `aiohttp.ClientSession(trust_env=True)` option.
+For further technical details, you can refer to the
+[aiohttp documentation](https://docs.aiohttp.org/en/v3.9.3/client_advanced.html#proxy-support).
 
 ## How to Use It
 
@@ -73,10 +76,11 @@ To leverage a different file, invoke the `--config` option during execution.
 - timeout: Specifies the maximum time (in seconds) to wait for web link responses. Default: `10` seconds.
 - exclude_links: Accepts a list of links to exclude from checks. Default: `[]`.
 - exclude_files: Accepts a list of files to exclude from checks. Default: `[]`.
-- check_web_links: Toggle web link checks on or off. Set to `false` to focus solely on file-based links. Default: `true`.
+- check_web_links: Toggle web link checks on or off. Default: `true`.
 
 [!TIP]
-Leverage wildcard patterns ([fnmatch](https://docs.python.org/3/library/fnmatch.html) syntax) for flexible exclusions in both `exclude_links` and `exclude_files` lists.
+Leverage wildcard patterns ([fnmatch](https://docs.python.org/3/library/fnmatch.html) syntax) for flexible exclusions
+in both `exclude_links` and `exclude_files` lists.
 
 ```toml
 [tool.md_dead_link_check]
