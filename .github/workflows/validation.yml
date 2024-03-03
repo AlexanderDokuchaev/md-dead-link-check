@@ -38,6 +38,31 @@ jobs:
       - name: Pytest
         run: pytest tests -rfs -vv
 
+  pytest-win:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - name: Install package
+        run: pip install .[dev]
+      - name: Pytest
+        run: pytest tests -rfs -vv
+
+  pytest-mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - name: Install package
+        run: pip install .[dev]
+      - name: Pytest
+        run: pytest tests -rfs -vv
+
+
   md-dead-link-check:
     runs-on: ubuntu-22.04
     steps:
