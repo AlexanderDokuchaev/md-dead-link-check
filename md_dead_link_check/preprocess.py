@@ -9,7 +9,7 @@ from typing import Dict, List, Tuple
 from git import Repo
 
 RE_HEADER = r"^[#]{1,6}\s*(.*)"
-RE_LINK = r"([!]{0,1})\[[^\]]*\]\((([^\s)]+)(?:\s*(.*?))?)\)"
+RE_LINK = r"[!]{0,1}\[[^\]!]*\]\((([^\s)]+)(?:\s*(.*?))?)\)"
 RE_HTML_A_TAG_ID = r"<a\s+id=[\"'](.*)[\"']>.*?<\/a>"
 RE_SUB = r"[$`][^`]+?[$`]"
 
@@ -90,14 +90,15 @@ def process_md_file(path: Path, root_dir: Path) -> MarkdownInfo:
 
             # Detect links
             matches = re.findall(RE_LINK, line)
+            for text, link, title in matches:
+                links.append(LinkInfo(link, path, line_num))
+
             if matches:
-                for image_prefix, full_link, img_link, _ in matches:
-                    if image_prefix:
-                        # for image ![img](img_link "name")
-                        links.append(LinkInfo(img_link, path, line_num))
-                    else:
-                        # for link [link](img_link)
-                        links.append(LinkInfo(full_link, path, line_num))
+                # For case [![text](img_link)](link)
+                sub_line = re.sub(RE_LINK, "link", line)
+                matches2 = re.findall(RE_LINK, sub_line)
+                for text, link, title in matches2:
+                    links.append(LinkInfo(link, path, line_num))
 
             # Detect id under a tag <a id="introduction"></a>
             matches = re.findall(RE_HTML_A_TAG_ID, line)

@@ -49,6 +49,7 @@ def test_process_md_file():
         "grave",
         "links",
         "header-with-quotes-and-math",
+        "badge",
     ]
 
     ref_links = [
@@ -76,6 +77,16 @@ def test_process_md_file():
             link="/tests/test_md_files/d/a.md",
             location=Path("tests/test_md_files/a.md"),
             line_num=30,
+        ),
+        LinkInfo(
+            link="https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/github_action.yml/badge.svg?branch=main",
+            location=Path("tests/test_md_files/a.md"),
+            line_num=36,
+        ),
+        LinkInfo(
+            link="https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/github_action.yml",
+            location=Path("tests/test_md_files/a.md"),
+            line_num=36,
         ),
     ]
     assert md_info.links == ref_links

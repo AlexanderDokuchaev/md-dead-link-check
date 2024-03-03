@@ -27,6 +27,10 @@ Some text
 [github](https://github.com/AlexanderDokuchaev)
 [b](./b.md) [d.a](b.md) `[A+B](A)`
 [d.a](./d/a.md)
-[d.a](/tests/test_md_files/d/a.md)
+[d.a](/tests/test_md_files/d/a.md "tag")
 
 ### Header with `quotes` and $math$
+
+#### Badge
+
+[![GitHub Action](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/github_action.yml/badge.svg?branch=main "tag")](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/github_action.yml "tag")

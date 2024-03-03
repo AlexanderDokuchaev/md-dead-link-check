@@ -30,8 +30,3 @@ repos:
     hooks:
       - id: markdownlint
         args: [--config=.markdownlint.yaml]
-
-  - repo: https://github.com/AlexanderDokuchaev/md-dead-link-check
-    rev: v0.1.0
-    hooks:
-      - id: md-dead-link-check

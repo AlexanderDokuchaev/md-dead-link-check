@@ -1,9 +1,9 @@
 # Markdown Dead Link Checker
 
-[![GitHub Action](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/github_action.yml/badge.svg)](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/github_action.yml)
-[![Ubuntu](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/ubuntu.yml/badge.svg)](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/ubuntu.yml)
+[![GitHub Action](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/github_action.yml/badge.svg?branch=main)](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/github_action.yml)
+[![Ubuntu](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/ubuntu.yml/badge.svg?branch=main)](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/ubuntu.yml)
 [![Windows](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/win.yml/badge.svg?branch=main)](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/win.yml)
-[![MacOS](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/mac.yml/badge.svg)](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/mac.yml)
+[![MacOS](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/mac.yml/badge.svg?branch=main)](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/mac.yml)
 
 This handy tool helps you maintain the integrity of your Markdown files by identifying broken links.
 It scans your files and detects:
@@ -27,8 +27,8 @@ File: tests/test_md_files/fail.md:13 • Link: a.md#fail • Error: Not found fr
 
 > [!NOTE]
 > Only error codes like **404 (Not Found)**, **410 (Gone)**, and **500 (Internal Server Error)**,
-> and links that don't exist are considered "dead links". Other error codes,
-> typically indicate temporary issues with the host server.
+> and links that don't exist are considered "dead links". Other error codes typically indicate
+> temporary issues with the host server or unsupported links for the HEAD request type.
 
 ## How to Use It
 
