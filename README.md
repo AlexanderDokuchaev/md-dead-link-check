@@ -1,13 +1,13 @@
-# Markdown dead link checker
+# Markdown Dead Link Checker
 
-This is a lightweight and fast tool to help you keep your Markdown files free of broken links!
-It scans your Markdown files and verifies whether each link is still active, letting you know if any need attention.
+This handy tool helps you maintain the integrity of your Markdown files by identifying broken links.
+It scans your files and detects:
 
-## Detection issues
+Here's what it does:
 
-- Unavailable web links.
-- Incorrect links to file.
-- Not existed fragments in markdown, like `[no-fragment](README.md#no-fragment)`.
+- Missing webpages: Links that no longer exist on the internet.
+- Incorrect file links: Links that point to the wrong file in your project.
+- Non-existent fragments (anchors): Links to specific sections that don't exist, e.g. `README.md#no-fragment`.
 
 Example of output for [fail.md](tests/test_md_files/fail.md)
 
@@ -20,9 +20,22 @@ File: tests/test_md_files/fail.md:13 • Link: a.md#fail • Error: Not found fr
 ❌ Found 5 dead links 🙀
 ```
 
-## Usage
+## Performance
 
-### Github action
+This tool utilizes asynchronous API calls and avoids downloading full web pages,
+enabling it to process thousands links in several seconds.
+
+## Proxy
+
+This tool works in accordance with your system's proxy settings for HTTP and HTTPS requests.
+These settings are typically found in your environment variables and are identified
+by the names `HTTP_PROXY` and `HTTPS_PROXY`.
+
+## How to Use It
+
+### Option 1: GitHub Actions
+
+Add Github Action config to `.github/workflow/`
 
 ```yaml
 jobs:
@@ -30,49 +43,46 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
-      - uses: AlexanderDokuchaev/md-dead-link-check@main
+      - uses: AlexanderDokuchaev/md-dead-link-check@latest
 ```
 
-### Pre-commit hook
+### Option 2: Pre-Commit
 
-Adding to your .pre-commit-config.yaml
+Adding to your `.pre-commit-config.yaml` to integrate in [pre-commit](https://pre-commit.com/) tool
 
 ```yaml
   - repo: https://github.com/AlexanderDokuchaev/md-dead-link-check
-    rev: main
+    rev: latest
     hooks:
       - id: md-dead-link-check
 ```
 
-### Install rom pip
+### Option 3: Install from pip
+
+For direct use, install with pip and run:
 
 ```bash
 pip install md-dead-link-check
 md-dead-link-check
 ```
 
-### Install github repo
-
-```bash
-git clone https://github.com/AlexanderDokuchaev/md-dead-link-check
-cd md-dead-link-check
-pip install .
-md-dead-link-check
-```
-
 ## Configuration
 
-By default use `pyproject.toml`, to use another config toml file use `--config`.
+This tool seamlessly integrates with your project's `pyproject.toml` file for configuration.
+To leverage a different file, invoke the `--config` option during execution.
 
-- timeout - timeout to response web link, defaults `10`.
-- exclude_links - disable fails for links, defaults `[]`.
-- exclude_files - disable check for file, defaults `[]`.
-- check_web_links - to disable check web links, defaults `true`.
+- timeout: Specifies the maximum time (in seconds) to wait for web link responses. Default: `10` seconds.
+- exclude_links: Accepts a list of links to exclude from checks. Default: `[]`.
+- exclude_files: Accepts a list of files to exclude from checks. Default: `[]`.
+- check_web_links: Toggle web link checks on or off. Set to `false` to focus solely on file-based links. Default: `true`.
+
+[!TIP]
+Leverage wildcard patterns ([fnmatch](https://docs.python.org/3/library/fnmatch.html) syntax) for flexible exclusions in both `exclude_links` and `exclude_files` lists.
 
 ```toml
 [tool.md_dead_link_check]
 timeout = 10
-exclude_links = ["https://github.com/"]
-exclude_files = ["tests/test_md_files/fail.md"]
+exclude_links = ["https://github.com/", "*localhost*"]
+exclude_files = ["tests/test_md_files/fail.md", "tests/*"]
 check_web_links = true
 ```

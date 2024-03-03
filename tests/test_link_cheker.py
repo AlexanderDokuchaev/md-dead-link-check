@@ -87,13 +87,21 @@ def test_exclude_files():
     assert ret == []
 
 
-def test_exclude_links():
+@pytest.mark.parametrize(
+    "exclude_links",
+    (
+        ["https://github.com/AlexanderDokuchaev/FAILED", "fail.md1", "/test/fail.md1"],
+        ["https://github.com/AlexanderDokuchaev/*", "*.md1"],
+    ),
+    ids=["no_re", "re"],
+)
+def test_exclude_links(exclude_links):
     path = "tests/test_md_files/fail.md"
     root_dir = Path(__file__).parent.parent
     md_data = {path: process_md_file(Path(path), root_dir)}
     ret = check_all_links(
         md_data,
-        Config(exclude_links=["https://github.com/AlexanderDokuchaev/FAILED", "fail.md1"]),
+        Config(exclude_links=exclude_links),
         root_dir,
         list(md_data.keys()),
     )
@@ -109,14 +117,6 @@ def test_exclude_links():
                 line_num=4,
             ),
             err_msg="",
-        ),
-        StatusInfo(
-            link_info=LinkInfo(
-                link="/test/fail.md1",
-                location=Path("tests/test_md_files/fail.md"),
-                line_num=8,
-            ),
-            err_msg="Path does not exist",
         ),
     ]
     assert ret == ref

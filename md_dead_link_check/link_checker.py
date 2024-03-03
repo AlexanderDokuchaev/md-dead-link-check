@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import os
 from dataclasses import dataclass
+from fnmatch import fnmatch
 from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional
 from urllib.parse import urlsplit
@@ -35,8 +36,8 @@ def get_proxies(env: Mapping[str, Any]) -> Dict[str, Optional[str]]:
     Find proxies in environment.
     """
     return {
-        "http": env.get("http_proxy", env.get("HTTP_PROXY")),
-        "https": env.get("https_proxy", env.get("HTTPS_PROXY")),
+        "http": env.get("HTTP_PROXY", env.get("http_proxy")),
+        "https": env.get("HTTPS_PROXY", env.get("https_proxy")),
     }
 
 
@@ -89,10 +90,10 @@ def check_web_links(md_data: Dict[str, MarkdownInfo], config: Config, files: Lis
         if md_file not in md_data:
             continue
         md_file_info = md_data[md_file]
-        if md_file in config.exclude_files:
+        if any(fnmatch(md_file, p) for p in config.exclude_files):
             continue
         for li in md_file_info.links:
-            if li.link in config.exclude_links:
+            if any(fnmatch(li.link, p) for p in config.exclude_links):
                 continue
             if urlsplit(li.link).netloc:
                 web_links.append(li)
@@ -103,11 +104,13 @@ def check_web_links(md_data: Dict[str, MarkdownInfo], config: Config, files: Lis
 def check_path_links(md_data: Dict[str, MarkdownInfo], root_dir: Path, config: Config) -> List[StatusInfo]:
     ret = []
     for md_file, md_file_info in md_data.items():
-        if md_file in config.exclude_files:
+        if any(fnmatch(md_file, p) for p in config.exclude_files):
             continue
         md_abs_path = root_dir / md_file_info.path
         for md_link in md_file_info.links:
-            if md_link.link in config.exclude_links:
+            for p in config.exclude_links:
+                print(fnmatch(md_link.link, p), md_link.link, p)
+            if any(fnmatch(md_link.link, p) for p in config.exclude_links):
                 continue
             split_result = urlsplit(md_link.link)
             if split_result.netloc:

@@ -10,7 +10,7 @@ from git import Repo
 
 RE_HEADER = r"^[#]{1,6}\s*(.*)"
 RE_LINK = r"([!]{0,1})\[[^\]]*\]\((([^\s)]+)(?:\s*(.*?))?)\)"
-RE_ID = r"<a\s+id=[\"'](.*)[\"']>.*?<\/a>"
+RE_HTML_A_TAG_ID = r"<a\s+id=[\"'](.*)[\"']>.*?<\/a>"
 RE_SUB = r"[$`][^`]+?[$`]"
 
 
@@ -99,8 +99,8 @@ def process_md_file(path: Path, root_dir: Path) -> MarkdownInfo:
                         # for link [link](img_link)
                         links.append(LinkInfo(full_link, path, line_num))
 
-            # Detect id
-            matches = re.findall(RE_ID, line)
+            # Detect id under a tag <a id="introduction"></a>
+            matches = re.findall(RE_HTML_A_TAG_ID, line)
             if matches:
                 for id in matches:
                     fragments.append(id)
