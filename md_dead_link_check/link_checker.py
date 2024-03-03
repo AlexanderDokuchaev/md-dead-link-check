@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 import asyncio
-import os
 from dataclasses import dataclass
 from fnmatch import fnmatch
 from pathlib import Path
-from typing import Any, Dict, List, Mapping, Optional
+from typing import Dict, List, Optional
 from urllib.parse import urlsplit
 
 from aiohttp import ClientSession
@@ -31,38 +30,14 @@ class StatusInfo:
         return self.link_info < other.link_info
 
 
-def get_proxies(env: Mapping[str, Any]) -> Dict[str, Optional[str]]:
-    """
-    Find proxies in environment.
-    """
-    return {
-        "http": env.get("HTTP_PROXY", env.get("http_proxy")),
-        "https": env.get("HTTPS_PROXY", env.get("https_proxy")),
-    }
-
-
-def select_proxy(url: str, proxies: Dict[str, Optional[str]]) -> Optional[str]:
-    """
-    Select proxy setting by type by suffix of url.
-    """
-    if url.startswith("https://"):
-        proxy = proxies.get("https")
-    else:
-        proxy = proxies.get("http")
-    return proxy
-
-
-async def process_link(
-    link_info: LinkInfo, session: ClientSession, proxies: Dict[str, Optional[str]], timeout: int
-) -> StatusInfo:
+async def process_link(link_info: LinkInfo, session: ClientSession, timeout: int) -> StatusInfo:
     """
     Asynchronously processes a link to check its status and gather information.
     Timeout is not interpolated as error, because timeout often occur due to temporary server issues and
     retrying the request might be more appropriate than treating it as an immediate failure.
     """
     try:
-        proxy = select_proxy(link_info.link, proxies)
-        response = await session.head(link_info.link, allow_redirects=True, proxy=proxy, timeout=timeout)
+        response = await session.head(link_info.link, allow_redirects=True, timeout=timeout, ssl=False)
         response.raise_for_status()
     except ClientResponseError as e:
         if e.status in CATCH_RESPONSE_STATUS:
@@ -78,9 +53,8 @@ async def process_link(
 
 
 async def async_check_links(links: list[LinkInfo], config: Config) -> List[StatusInfo]:
-    proxies = get_proxies(os.environ)
-    async with ClientSession() as session:
-        ret = await asyncio.gather(*[process_link(li, session, proxies, config.timeout) for li in links])
+    async with ClientSession(trust_env=True) as session:
+        ret = await asyncio.gather(*[process_link(li, session, config.timeout) for li in links])
     return ret
 
 

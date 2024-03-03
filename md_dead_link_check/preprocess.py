@@ -64,7 +64,7 @@ def process_header_to_fragment(header: str) -> str:
 def process_md_file(path: Path, root_dir: Path) -> MarkdownInfo:
     fragments: List[str] = []
     links: List[LinkInfo] = []
-    with (root_dir / path).open() as stream:
+    with (root_dir / path).open(encoding="utf8") as stream:
         in_code_block = ""
         for line_num, line in enumerate(stream.readlines(), 1):
             striped_line = line.strip()

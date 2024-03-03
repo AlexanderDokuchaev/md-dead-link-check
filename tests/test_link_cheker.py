@@ -7,24 +7,8 @@ from md_dead_link_check.link_checker import MarkdownInfo
 from md_dead_link_check.link_checker import StatusInfo
 from md_dead_link_check.link_checker import check_all_links
 from md_dead_link_check.link_checker import check_web_links
-from md_dead_link_check.link_checker import get_proxies
 from md_dead_link_check.preprocess import LinkInfo
 from md_dead_link_check.preprocess import process_md_file
-
-
-@pytest.mark.parametrize(
-    "env, ref",
-    (
-        ({"http_proxy": "http", "https_proxy": "https"}, {"http": "http", "https": "https"}),
-        ({"HTTP_PROXY": "http", "HTTPS_PROXY": "https"}, {"http": "http", "https": "https"}),
-        ({"HTTP_PROXY": "http"}, {"http": "http", "https": None}),
-        ({"HTTPS_PROXY": "https"}, {"http": None, "https": "https"}),
-        ({}, {"http": None, "https": None}),
-    ),
-)
-def test_get_proxies(env, ref):
-    proxies = get_proxies(env)
-    assert proxies == ref
 
 
 @pytest.mark.parametrize(

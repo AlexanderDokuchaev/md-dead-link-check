@@ -27,9 +27,8 @@ enabling it to process thousands links in several seconds.
 
 ## Proxy
 
-This tool works in accordance with your system's proxy settings for HTTP and HTTPS requests.
-These settings are typically found in your environment variables and are identified
-by the names `HTTP_PROXY` and `HTTPS_PROXY`.
+This tool leverages your system's existing HTTP and HTTPS proxy configuration. It achieves this by trusting the environment variables that your operating system utilizes to define proxy settings. This functionality is enabled by the `aiohttp.ClientSession(trust_env=True)` option.
+For further technical details, you can refer to the [aiohttp documentation](https://docs.aiohttp.org/en/stable/client_advanced.html#proxy-support)
 
 ## How to Use It
 
