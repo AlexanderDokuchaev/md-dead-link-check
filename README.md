@@ -51,7 +51,7 @@ Adding to your `.pre-commit-config.yaml` to integrate in [pre-commit](https://pr
 
 ```yaml
   - repo: https://github.com/AlexanderDokuchaev/md-dead-link-check
-    rev: 0.3
+    rev: "0.3"
     hooks:
       - id: md-dead-link-check
 ```
