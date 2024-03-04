@@ -92,11 +92,13 @@ To leverage a different file, invoke the `--config` option during execution.
 - timeout: Specifies the maximum time (in seconds) to wait for web link responses. Default: `5` seconds.
 - exclude_links: Accepts a list of links to exclude from checks. Default: `[]`.
 - exclude_files: Accepts a list of files to exclude from checks. Default: `[]`.
+- force_get_requests_for_links: Accepts a list of links for which the tool will use `GET` requests during checks. Default: `[]`.
 - check_web_links: Toggle web link checks on or off. Default: `true`.
+- validate_ssl: Toggles whether to validate SSL certificates when checking web links. Default: `true`.
 
 > [!TIP]
-> Leverage wildcard patterns ([fnmatch](https://docs.python.org/3/library/fnmatch.html) syntax) for flexible exclusions
-> in both `exclude_links` and `exclude_files` lists.
+> Leverage wildcard patterns ([fnmatch](https://docs.python.org/3/library/fnmatch.html) syntax) for
+> `exclude_links`, `exclude_files` and `force_get_requests_for_links` parameters.
 
 ```toml
 [tool.md_dead_link_check]

@@ -32,14 +32,25 @@ class StatusInfo:
         return self.link_info < other.link_info
 
 
-async def process_link(link_info: LinkInfo, session: ClientSession, timeout: int) -> StatusInfo:
+async def process_link(link_info: LinkInfo, session: ClientSession, config: Config) -> StatusInfo:
     """
     Asynchronously processes a link to check its status and gather information.
     Timeout is not interpolated as error, because timeout often occur due to temporary server issues and
     retrying the request might be more appropriate than treating it as an immediate failure.
     """
     try:
-        response = await session.head(link_info.link, allow_redirects=True, timeout=timeout, ssl=False)
+
+        kwargs = {
+            "url": link_info.link,
+            "allow_redirects": True,
+            "timeout": config.timeout,
+            "ssl": config.validate_ssl,
+        }
+        if any(fnmatch(link_info.link, p) for p in config.force_get_requests_for_links):
+            response = await session.get(**kwargs)
+        else:
+            response = await session.head(**kwargs)
+
         response.raise_for_status()
     except ClientResponseError as e:
         if e.status in CATCH_RESPONSE_STATUS:
@@ -57,7 +68,7 @@ async def process_link(link_info: LinkInfo, session: ClientSession, timeout: int
 
 async def async_check_links(links: list[LinkInfo], config: Config) -> List[StatusInfo]:
     async with ClientSession(trust_env=True) as session:
-        ret = await asyncio.gather(*[process_link(li, session, config.timeout) for li in links])
+        ret = await asyncio.gather(*[process_link(li, session, config) for li in links])
     return ret
 
 

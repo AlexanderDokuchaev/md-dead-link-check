@@ -13,7 +13,9 @@ class Config:
     timeout: int = 5
     exclude_links: List[str] = field(default_factory=lambda: [])
     exclude_files: List[str] = field(default_factory=lambda: [])
+    force_get_requests_for_links: List[str] = field(default_factory=lambda: [])
     check_web_links: bool = True
+    validate_ssl: bool = True
 
 
 def get_config(root_dir: Path, config_path: Optional[Path]) -> Config:
@@ -30,7 +32,7 @@ def get_config(root_dir: Path, config_path: Optional[Path]) -> Config:
             if hasattr(config, key):
                 setattr(config, key, value)
             else:
-                raise ConnectionError(
+                raise ValueError(
                     f"Unexpected config key `{key}` in {config_path.name}. "
                     f"Available keys: [{', '.join(config.__annotations__)}]"
                 )
