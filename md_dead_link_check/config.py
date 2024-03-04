@@ -10,7 +10,7 @@ PROJECT_NAME = "md_dead_link_check"
 
 @dataclass
 class Config:
-    timeout: int = 10
+    timeout: int = 5
     exclude_links: List[str] = field(default_factory=lambda: [])
     exclude_files: List[str] = field(default_factory=lambda: [])
     check_web_links: bool = True

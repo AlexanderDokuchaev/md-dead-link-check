@@ -89,7 +89,7 @@ For further technical details, you can refer to the
 This tool seamlessly integrates with your project's `pyproject.toml` file for configuration.
 To leverage a different file, invoke the `--config` option during execution.
 
-- timeout: Specifies the maximum time (in seconds) to wait for web link responses. Default: `10` seconds.
+- timeout: Specifies the maximum time (in seconds) to wait for web link responses. Default: `5` seconds.
 - exclude_links: Accepts a list of links to exclude from checks. Default: `[]`.
 - exclude_files: Accepts a list of files to exclude from checks. Default: `[]`.
 - check_web_links: Toggle web link checks on or off. Default: `true`.
