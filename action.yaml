@@ -1,5 +1,5 @@
-name: 'Markdown dead link checker GitHub Action'
-description: 'A GitHub Action to help you keep your Markdown files free of broken links!'
+name: 'Markdown dead link checker'
+description: 'This handy tool helps you maintain the integrity of your Markdown files by identifying broken links.'
 branding:
   icon: 'external-link'
   color: 'blue'
@@ -9,7 +9,10 @@ inputs:
     description: 'Config toml file'
     required: false
     default: 'pyproject.toml'
-
+  version:
+    description: 'Version of package'
+    required: false
+    default: '0.3'
 runs:
   using: 'composite'
   steps:
@@ -19,7 +22,7 @@ runs:
         python-version: '3.10'
 
     - name: Install md-dead-link-check
-      run: pip install md-dead-link-check==0.2
+      run: pip install md-dead-link-check==${{ inputs.version }}
       shell: bash
 
     - name: Fetch the number's square
