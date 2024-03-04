@@ -26,7 +26,7 @@ File: tests/test_md_files/fail.md:13 • Link: a.md#fail • Error: Not found fr
 ```
 
 > [!NOTE]
-> Error codes like **404 (Not Found)**, **408 (Timeout)**, **410 (Gone)**, and **500 (Internal Server Error)**,
+> By defaults, only error codes like **404 (Not Found)**, **410 (Gone)**, and **500 (Internal Server Error)**,
 > and links that don't exist are considered "dead links". Other error codes typically indicate
 > temporary issues with the host server or unsupported links for the HEAD request type.
 
