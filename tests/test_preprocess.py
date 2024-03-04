@@ -74,6 +74,11 @@ def test_process_md_file():
             line_num=29,
         ),
         LinkInfo(
+            link="./d/a.md",
+            location=Path("tests/test_md_files/a.md"),
+            line_num=29,
+        ),
+        LinkInfo(
             link="/tests/test_md_files/d/a.md",
             location=Path("tests/test_md_files/a.md"),
             line_num=30,
