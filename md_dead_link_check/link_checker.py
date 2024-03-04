@@ -94,8 +94,6 @@ def check_path_links(md_data: Dict[str, MarkdownInfo], root_dir: Path, config: C
             continue
         md_abs_path = root_dir / md_file_info.path
         for md_link in md_file_info.links:
-            for p in config.exclude_links:
-                print(fnmatch(md_link.link, p), md_link.link, p)
             if any(fnmatch(md_link.link, p) for p in config.exclude_links):
                 continue
             split_result = urlsplit(md_link.link)
