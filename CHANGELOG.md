@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4
+
+- Remove debug output
+
 ## 0.3
 
 - Multi-platform support: Added support for Windows and macOS.
