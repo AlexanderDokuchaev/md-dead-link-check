@@ -15,11 +15,7 @@ from md_dead_link_check.config import Config
 from md_dead_link_check.preprocess import LinkInfo
 from md_dead_link_check.preprocess import MarkdownInfo
 
-CATCH_RESPONSE_STATUS = [
-    404,  # Not found
-    410,  # Gone
-    500,  # Internal Server Error (for cannot connect to host under proxy)
-]
+TIMEOUT_RESPONSE_CODE = 408
 
 
 @dataclass
@@ -53,7 +49,7 @@ async def process_link(link_info: LinkInfo, session: ClientSession, config: Conf
 
         response.raise_for_status()
     except ClientResponseError as e:
-        if e.status in CATCH_RESPONSE_STATUS:
+        if not config.catch_response_codes or e.status in config.catch_response_codes:
             return StatusInfo(link_info, f"{e.status}: {e.message}")
         return StatusInfo(link_info, warn_msg=f"{e.status}: {e.message}")
     except asyncio.CancelledError as e:
@@ -61,7 +57,9 @@ async def process_link(link_info: LinkInfo, session: ClientSession, config: Conf
     except ClientConnectorError as e:
         return StatusInfo(link_info, str(e))
     except asyncio.TimeoutError:
-        return StatusInfo(link_info, warn_msg="TimeoutError")
+        if TIMEOUT_RESPONSE_CODE in config.catch_response_codes:
+            return StatusInfo(link_info, err_msg="408: Timeout")
+        return StatusInfo(link_info, warn_msg="408: Timeout")
 
     return StatusInfo(link_info)
 

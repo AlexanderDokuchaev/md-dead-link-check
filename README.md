@@ -26,7 +26,7 @@ File: tests/test_md_files/fail.md:13 • Link: a.md#fail • Error: Not found fr
 ```
 
 > [!NOTE]
-> Only error codes like **404 (Not Found)**, **410 (Gone)**, and **500 (Internal Server Error)**,
+> Error codes like **404 (Not Found)**, **408 (Timeout)**, **410 (Gone)**, and **500 (Internal Server Error)**,
 > and links that don't exist are considered "dead links". Other error codes typically indicate
 > temporary issues with the host server or unsupported links for the HEAD request type.
 
@@ -90,9 +90,11 @@ This tool seamlessly integrates with your project's `pyproject.toml` file for co
 To leverage a different file, invoke the `--config` option during execution.
 
 - timeout: Specifies the maximum time (in seconds) to wait for web link responses. Default: `5` seconds.
-- exclude_links: Accepts a list of links to exclude from checks. Default: `[]`.
-- exclude_files: Accepts a list of files to exclude from checks. Default: `[]`.
-- force_get_requests_for_links: Accepts a list of links for which the tool will use `GET` requests during checks. Default: `[]`.
+- catch_response_codes: List of HTTP response codes to consider as failures.
+If empty, all codes greater than 400 will be marked as failures. Default: `[404, 410, 500]`.
+- exclude_links: List of links to exclude from checks. Default: `[]`.
+- exclude_files: List of files to exclude from checks. Default: `[]`.
+- force_get_requests_for_links: List of links for which the tool will use `GET` requests during checks. Default: `[]`.
 - check_web_links: Toggle web link checks on or off. Default: `true`.
 - validate_ssl: Toggles whether to validate SSL certificates when checking web links. Default: `true`.
 
