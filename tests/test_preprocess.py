@@ -13,6 +13,7 @@ def test_find_all_markdowns_in_repo():
     repo = Repo(search_parent_directories=True)
     md_files = find_all_markdowns_in_repo(repo)
     refs = [
+        "CHANGELOG.md",
         "README.md",
         "tests/test_md_files/a.md",
         "tests/test_md_files/b.md",
