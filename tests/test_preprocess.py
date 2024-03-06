@@ -32,6 +32,9 @@ def test_find_all_markdowns_in_repo():
         ("C++ ext", "c-ext"),
         ("H_I (H)", "h_i-h"),
         ("A `quotes` f", "a-quotes-f"),
+        ("H $ maths $", "h--maths-"),
+        ("H [text](link)", "h-text"),
+        ("H [![text](link)](link)", "h-"),
     ),
 )
 def test_process_header_to_fragment(header, fragment):

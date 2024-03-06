@@ -9,7 +9,7 @@ from typing import Dict, List, Tuple
 from git import Repo
 
 RE_HEADER = r"^[#]{1,6}\s*(.*)"
-RE_LINK = r"[!]{0,1}\[[^\]!]*\]\((([^\s)]+)(?:\s*(.*?))?)\)"
+RE_LINK = r"([!]{0,1})\[([^\]!]*)\]\(([^\s)]+)(?:\s*(.*?))?\)"
 RE_HTML_A_TAG_ID = r"<a\s+id=[\"'](.*?)[\"']>.*?<\/a>"
 RE_HTML_A_TAG_HREF = r"<a\s+href=[\"'](.*?)[\"']>.*?<\/a>"
 RE_SUB = r"[$`][^`]+?[$`]"
@@ -56,8 +56,18 @@ def process_header_to_fragment(header: str) -> str:
     Converts a Markdown header to a URL fragment.
     """
 
-    header = header.strip()
-    fragment = header.lower().replace(" ", "-")
+    fragment = header.strip()
+    while True:
+        res = re.search(RE_LINK, fragment)
+        if not res:
+            break
+        if res.group(1) == "!":
+            # Use # to work
+            fragment = fragment.replace(res.group(0), "")
+        else:
+            fragment = fragment.replace(res.group(0), res.group(2))
+
+    fragment = fragment.lower().replace(" ", "-")
     fragment = re.sub(r"[^a-z0-9-_]", "", fragment)
     return fragment
 
@@ -91,14 +101,14 @@ def process_md_file(path: Path, root_dir: Path) -> MarkdownInfo:
 
             # Detect links
             matches = re.findall(RE_LINK, line)
-            for text, link, title in matches:
+            for img_tag, text, link, title in matches:
                 links.append(LinkInfo(link, path, line_num))
 
             if matches:
                 # For case [![text](img_link)](link)
                 sub_line = re.sub(RE_LINK, "link", line)
                 matches2 = re.findall(RE_LINK, sub_line)
-                for text, link, title in matches2:
+                for img_tag, text, link, title in matches2:
                     links.append(LinkInfo(link, path, line_num))
 
             # Detect id under a tag <a id="introduction"></a>
