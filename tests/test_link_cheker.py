@@ -59,6 +59,11 @@ def test_fails():
             link_info=LinkInfo(link="fail.md1", location=Path("tests/test_md_files/fail.md"), line_num=9),
             err_msg="Path does not exist",
         ),
+        StatusInfo(
+            link_info=LinkInfo(link="a.md#fail", location=Path("tests/test_md_files/fail.md"), line_num=13),
+            err_msg=None,
+            warn_msg=None,
+        ),
     ]
     assert ret == ref
 
@@ -77,7 +82,7 @@ def test_exclude_files():
         ["https://github.com/AlexanderDokuchaev/FAILED", "fail.md1", "/test/fail.md1"],
         ["https://github.com/AlexanderDokuchaev/*", "*.md1"],
     ),
-    ids=["no_re", "re"],
+    ids=["no_wildcard", "wildcard"],
 )
 def test_exclude_links(exclude_links):
     path = "tests/test_md_files/fail.md"
@@ -96,11 +101,14 @@ def test_exclude_links(exclude_links):
     ref = [
         StatusInfo(
             link_info=LinkInfo(
-                link="https://not_exist_github.githubcom/",
-                location=Path("tests/test_md_files/fail.md"),
-                line_num=4,
+                link="https://not_exist_github.githubcom/", location=Path("tests/test_md_files/fail.md"), line_num=4
             ),
             err_msg="",
+        ),
+        StatusInfo(
+            link_info=LinkInfo(link="a.md#fail", location=Path("tests/test_md_files/fail.md"), line_num=13),
+            err_msg=None,
+            warn_msg=None,
         ),
     ]
     assert ret == ref

@@ -122,15 +122,18 @@ def check_path_links(md_data: Dict[str, MarkdownInfo], root_dir: Path, config: C
                     ret.append(StatusInfo(md_link, "Path is not within git repository"))
                     continue
 
-                if res_path.as_posix() not in md_data:
-                    if not abs_path.exists():
-                        ret.append(StatusInfo(md_link, "Path does not exist"))
+                if res_path.as_posix() not in md_data and not abs_path.exists():
+                    ret.append(StatusInfo(md_link, "Path does not exist"))
                     continue
 
-                if fragment and fragment not in md_data[res_path.as_posix()].fragments:
+                if (
+                    fragment
+                    and res_path.as_posix() in md_data
+                    and fragment not in md_data[res_path.as_posix()].fragments
+                ):
                     ret.append(StatusInfo(md_link, "Not found fragment"))
                     continue
-            ret.append(StatusInfo(md_link, None))
+            ret.append(StatusInfo(md_link))
     return ret
 
 
