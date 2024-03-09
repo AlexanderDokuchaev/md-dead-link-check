@@ -147,7 +147,7 @@ def check_path_links(
                         continue
                 else:
                     # Not markdown file
-                    if not any(f.is_relative_to(rel_path) for f in files_in_repo):
+                    if not any(f.as_posix().startswith(rel_path.as_posix()) for f in files_in_repo):
                         if rel_path.exists():
                             ret.append(StatusInfo(md_link, "File does not added to repository"))
                         else:
