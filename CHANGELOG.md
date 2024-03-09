@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5
+
+- Fixed converting header with link to fragment.
+- Fixed parsing links for badge.
+- Check same links only one time.
+- Detection links to file that not added to repository.
+- Added `warn` and `all` arguments.
+- Removed `verbose` argument.
+
 ## 0.4
 
 - Remove debug output

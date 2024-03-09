@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
-      - uses: AlexanderDokuchaev/md-dead-link-check@0.4
+      - uses: AlexanderDokuchaev/md-dead-link-check@v0.5
 ```
 
 ### Option 2: Pre-Commit
@@ -52,7 +52,7 @@ Adding to your `.pre-commit-config.yaml` to integrate in [pre-commit](https://pr
 
 ```yaml
   - repo: https://github.com/AlexanderDokuchaev/md-dead-link-check
-    rev: "0.4"
+    rev: "v0.5"
     hooks:
       - id: md-dead-link-check
 ```
