@@ -1,9 +1,9 @@
 # Markdown Dead Link Checker
 
-[![GitHub Action](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/github_action.yml/badge.svg?branch=main)](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/github_action.yml)
-[![Ubuntu](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/ubuntu.yml/badge.svg?branch=main)](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/ubuntu.yml)
-[![Windows](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/win.yml/badge.svg?branch=main)](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/win.yml)
-[![MacOS](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/mac.yml/badge.svg?branch=main)](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/mac.yml)
+[![GitHub Action](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/github_action.yml/badge.svg?branch=main)](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/github_action.yml?query=branch%3Amain)
+[![Ubuntu](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/ubuntu.yml/badge.svg?branch=main)](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/ubuntu.yml?query=branch%3Amain)
+[![Windows](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/win.yml/badge.svg?branch=main)](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/win.yml?query=branch%3Amain)
+[![MacOS](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/mac.yml/badge.svg?branch=main)](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/mac.yml?query=branch%3Amain)
 
 This handy tool helps you maintain the integrity of your Markdown files by identifying broken links.
 It scans your files and detects:
@@ -104,8 +104,11 @@ If empty, all codes greater than 400 will be marked as failures. Default: `[404,
 
 ```toml
 [tool.md_dead_link_check]
-timeout = 10
-exclude_links = ["https://github.com/", "*localhost*"]
+timeout = 5
+exclude_links = ["https://github.com/", "https://github.com/*"]
 exclude_files = ["tests/test_md_files/fail.md", "tests/*"]
 check_web_links = true
+catch_response_codes = [404, 410, 500]
+force_get_requests_for_links = []
+validate_ssl = true
 ```
