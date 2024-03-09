@@ -35,7 +35,8 @@ def args_parser() -> Namespace:
             "by default will check in all files."
         ),
     )
-    parser.add_argument("--verbose", "-v", action="store_true", help="Print all links in summary.")
+    parser.add_argument("--warn", "-w", action="store_true", help="Show warning messages.")
+    parser.add_argument("--all", "-a", action="store_true", help="Show all links.")
     parser.add_argument("--no-color", "-nc", action="store_true", help="Disable coloring of output.")
     return parser.parse_args()
 
@@ -51,7 +52,7 @@ def main() -> int:
         files = list(md_data)
 
     status_list = check_all_links(md_data, config, repo_dir, files, files_in_repo)
-    err_num = summary(status_list, args.verbose, args.no_color)
+    err_num = summary(status_list, args.warn, args.all, args.no_color)
 
     return min(err_num, 1)
 

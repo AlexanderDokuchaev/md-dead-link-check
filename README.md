@@ -19,10 +19,11 @@ Example of output for [fail.md](tests/test_md_files/fail.md)
 ```bash
 File: tests/test_md_files/fail.md:3 • Link: https://github.com/AlexanderDokuchaev/FAILED • Error: 404: Not Found
 File: tests/test_md_files/fail.md:4 • Link: https://not_exist_github.githubcom/ • Error: 500: Internal Server Error
-File: tests/test_md_files/fail.md:8 • Link: /test/fail.md1 • Error: Path does not exist
-File: tests/test_md_files/fail.md:9 • Link: fail.md1 • Error: Path does not exist
-File: tests/test_md_files/fail.md:13 • Link: a.md#fail • Error: Not found fragment
-❌ Found 5 dead links 🙀
+File: tests/test_md_files/fail.md:8 • Link: /test/fail.md1 • Error: Path does not exists in repository
+File: tests/test_md_files/fail.md:9 • Link: fail.md1 • Error: Path does not exists in repository
+File: tests/test_md_files/fail.md:13 • Link: /tests/test_md_files/fail.md#fail • Error: Not found fragment
+File: tests/test_md_files/fail.md:15 • Link: not_exist_dir • Error: Path does not exists in repository
+❌ Found 6 dead links 🙀
 ```
 
 > [!NOTE]
@@ -82,7 +83,7 @@ For further technical details, you can refer to the
 > **Without proxy configuration in environment, link failures may not be reported.**
 > If your environment lacks proxy configuration (variables like `http_proxy` and `https_proxy`),
 > link retrieval attempts may time out without indicating a failure.
-> To help diagnose this issue, use the `--verbose` argument to log all processed links.
+> To help diagnose this issue, use the `--warn` argument to log all processed links.
 
 ## Configuration
 

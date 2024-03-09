@@ -38,7 +38,7 @@ class SpecSymbols:
                 setattr(self, key, "")
 
 
-def summary(status: List[StatusInfo], verbose: bool, no_color: bool) -> int:
+def summary(status: List[StatusInfo], print_warn: bool, print_all: bool, no_color: bool) -> int:
     """
     Print summary.
     Returns 0 if not found any error, otherwise 1.
@@ -55,11 +55,10 @@ def summary(status: List[StatusInfo], verbose: bool, no_color: bool) -> int:
         if x.err_msg:
             print(f"{link_msg} {specs.split} {specs.red}Error{specs.clean}: {x.err_msg}")
             err_nums += 1
-        elif verbose:
-            if x.warn_msg is None:
-                print(f"{link_msg} {specs.split} {specs.green}OK{specs.clean}")
-            else:
-                print(f"{link_msg} {specs.split} {specs.yellow}Warn{specs.clean}: {x.warn_msg}")
+        elif x.warn_msg and (print_warn or print_all):
+            print(f"{link_msg} {specs.split} {specs.yellow}Warn{specs.clean}: {x.warn_msg}")
+        elif print_all:
+            print(f"{link_msg} {specs.split} {specs.green}OK{specs.clean}")
 
     if err_nums:
         cat_repeat = 0 if no_color else max(min(err_nums // 10, 5), 1)
