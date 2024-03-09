@@ -4,7 +4,7 @@ import asyncio
 from dataclasses import dataclass
 from fnmatch import fnmatch
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Set
 from urllib.parse import urlsplit
 
 from aiohttp import ClientSession
@@ -28,7 +28,14 @@ class StatusInfo:
         return self.link_info < other.link_info
 
 
-async def process_link(link_info: LinkInfo, session: ClientSession, config: Config) -> StatusInfo:
+@dataclass
+class LinkStatus:
+    link: str
+    err_msg: Optional[str] = None
+    warn_msg: Optional[str] = None
+
+
+async def process_link(link: str, session: ClientSession, config: Config) -> LinkStatus:
     """
     Asynchronously processes a link to check its status and gather information.
     Timeout is not interpolated as error, because timeout often occur due to temporary server issues and
@@ -37,12 +44,12 @@ async def process_link(link_info: LinkInfo, session: ClientSession, config: Conf
     try:
 
         kwargs = {
-            "url": link_info.link,
+            "url": link,
             "allow_redirects": True,
             "timeout": config.timeout,
             "ssl": config.validate_ssl,
         }
-        if any(fnmatch(link_info.link, p) for p in config.force_get_requests_for_links):
+        if any(fnmatch(link, p) for p in config.force_get_requests_for_links):
             response = await session.get(**kwargs)
         else:
             response = await session.head(**kwargs)
@@ -50,28 +57,28 @@ async def process_link(link_info: LinkInfo, session: ClientSession, config: Conf
         response.raise_for_status()
     except ClientResponseError as e:
         if not config.catch_response_codes or e.status in config.catch_response_codes:
-            return StatusInfo(link_info, f"{e.status}: {e.message}")
-        return StatusInfo(link_info, warn_msg=f"{e.status}: {e.message}")
+            return LinkStatus(link, f"{e.status}: {e.message}")
+        return LinkStatus(link, warn_msg=f"{e.status}: {e.message}")
     except asyncio.CancelledError as e:
-        return StatusInfo(link_info, str(e))
+        return LinkStatus(link, str(e))
     except ClientConnectorError as e:
-        return StatusInfo(link_info, str(e))
+        return LinkStatus(link, str(e))
     except asyncio.TimeoutError:
         if TIMEOUT_RESPONSE_CODE in config.catch_response_codes:
-            return StatusInfo(link_info, err_msg="408: Timeout")
-        return StatusInfo(link_info, warn_msg="408: Timeout")
+            return LinkStatus(link, err_msg="408: Timeout")
+        return LinkStatus(link, warn_msg="408: Timeout")
 
-    return StatusInfo(link_info)
+    return LinkStatus(link)
 
 
-async def async_check_links(links: list[LinkInfo], config: Config) -> List[StatusInfo]:
+async def async_check_links(links: Set[str], config: Config) -> List[LinkStatus]:
     async with ClientSession(trust_env=True) as session:
         ret = await asyncio.gather(*[process_link(li, session, config) for li in links])
     return ret
 
 
 def check_web_links(md_data: Dict[str, MarkdownInfo], config: Config, files: List[str]) -> List[StatusInfo]:
-    web_links = []
+    web_links: List[LinkInfo] = []
     for md_file in files:
         if md_file not in md_data:
             continue
@@ -84,7 +91,16 @@ def check_web_links(md_data: Dict[str, MarkdownInfo], config: Config, files: Lis
             if urlsplit(li.link).netloc:
                 web_links.append(li)
 
-    return asyncio.run(async_check_links(web_links, config))
+    # Check only unique links
+    unique_links = set(li.link for li in web_links)
+    links_status = asyncio.run(async_check_links(unique_links, config))
+    links_status_dict = {li.link: li for li in links_status}
+
+    ret = []
+    for wl in web_links:
+        li_status = links_status_dict[wl.link]
+        ret.append(StatusInfo(wl, err_msg=li_status.err_msg, warn_msg=li_status.warn_msg))
+    return ret
 
 
 def check_path_links(md_data: Dict[str, MarkdownInfo], root_dir: Path, config: Config) -> List[StatusInfo]:
