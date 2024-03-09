@@ -3,12 +3,12 @@ name = "md_dead_link_check"
 description = "This is a lightweight and fast tool to help you keep your Markdown files free of broken links."
 readme = "README.md"
 version = "0.4"
-license = {file = "LICENSE"}
+license = "MIT"
 requires-python = ">= 3.8"
 dependencies = [
-  "toml==0.10.2",
-  "GitPython==3.1.42",
-  "aiohttp==3.9.3"
+  "toml>=0.7.0,<3.11.0",
+  "GitPython>=3.1.0,<3.2.0",
+  "aiohttp>=3.8.0,<3.10.0"
 ]
 keywords = [
   "markdown",
@@ -33,7 +33,6 @@ classifiers = [
 
 [project.urls]
 Homepage = "https://github.com/AlexanderDokuchaev/md-dead-link-check"
-Repository = "https://github.com/AlexanderDokuchaev/md-dead-link-check.git"
 Issues = "https://github.com/AlexanderDokuchaev/md-dead-link-check/issues"
 
 [project.optional-dependencies]
