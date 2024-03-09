@@ -10,4 +10,6 @@
 
 ### Incorrect fragment
 
-[1](a.md#fail)
+[1](/tests/test_md_files/fail.md#fail)
+
+[1](not_exist_dir)

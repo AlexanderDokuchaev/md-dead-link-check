@@ -43,14 +43,14 @@ def args_parser() -> Namespace:
 def main() -> int:
     args = args_parser()
 
-    md_data, repo_dir = preprocess_repository()
+    md_data, repo_dir, files_in_repo = preprocess_repository()
     config = get_config(repo_dir, args.config)
 
     files = normalize_files(args.files, repo_dir)
     if not args.hook and not files:
         files = list(md_data)
 
-    status_list = check_all_links(md_data, config, repo_dir, files)
+    status_list = check_all_links(md_data, config, repo_dir, files, files_in_repo)
     err_num = summary(status_list, args.verbose, args.no_color)
 
     return min(err_num, 1)

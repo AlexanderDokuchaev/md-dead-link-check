@@ -25,11 +25,14 @@ def test_check_link(url, msg):
     assert r.err_msg == msg
 
 
+TEST_FILES = [Path("tests/test_md_files/fail.md"), Path("tests/test_md_files/a.md")]
+
+
 def test_fails():
     path = "tests/test_md_files/fail.md"
     root_dir = Path(__file__).parent.parent
     md_data = {path: process_md_file(Path(path), root_dir)}
-    ret = check_all_links(md_data, Config(), root_dir, list(md_data.keys()))
+    ret = check_all_links(md_data, Config(), root_dir, list(md_data.keys()), TEST_FILES)
 
     # Differ err_msg on local test and github-ci
     ret[1].err_msg = ""
@@ -53,15 +56,28 @@ def test_fails():
         ),
         StatusInfo(
             link_info=LinkInfo(link="/test/fail.md1", location=Path("tests/test_md_files/fail.md"), line_num=8),
-            err_msg="Path does not exist",
+            err_msg="Path does not exists in repository",
         ),
         StatusInfo(
             link_info=LinkInfo(link="fail.md1", location=Path("tests/test_md_files/fail.md"), line_num=9),
-            err_msg="Path does not exist",
+            err_msg="Path does not exists in repository",
         ),
         StatusInfo(
-            link_info=LinkInfo(link="a.md#fail", location=Path("tests/test_md_files/fail.md"), line_num=13),
-            err_msg=None,
+            link_info=LinkInfo(
+                link="/tests/test_md_files/fail.md#fail",
+                location=Path("tests/test_md_files/fail.md"),
+                line_num=13,
+            ),
+            err_msg="Not found fragment",
+            warn_msg=None,
+        ),
+        StatusInfo(
+            link_info=LinkInfo(
+                link="not_exist_dir",
+                location=Path("tests/test_md_files/fail.md"),
+                line_num=15,
+            ),
+            err_msg="Path does not exists in repository",
             warn_msg=None,
         ),
     ]
@@ -72,7 +88,7 @@ def test_exclude_files():
     path = "tests/test_md_files/fail.md"
     root_dir = Path(__file__).parent.parent
     md_data = {path: process_md_file(Path(path), root_dir)}
-    ret = check_all_links(md_data, Config(exclude_files=[path]), root_dir, list(md_data.keys()))
+    ret = check_all_links(md_data, Config(exclude_files=[path]), root_dir, [path], TEST_FILES)
     assert ret == []
 
 
@@ -93,6 +109,7 @@ def test_exclude_links(exclude_links):
         Config(exclude_links=exclude_links),
         root_dir,
         list(md_data.keys()),
+        TEST_FILES,
     )
 
     # Differ err_msg on local test and github-ci
@@ -106,8 +123,21 @@ def test_exclude_links(exclude_links):
             err_msg="",
         ),
         StatusInfo(
-            link_info=LinkInfo(link="a.md#fail", location=Path("tests/test_md_files/fail.md"), line_num=13),
-            err_msg=None,
+            link_info=LinkInfo(
+                link="/tests/test_md_files/fail.md#fail",
+                location=Path("tests/test_md_files/fail.md"),
+                line_num=13,
+            ),
+            err_msg="Not found fragment",
+            warn_msg=None,
+        ),
+        StatusInfo(
+            link_info=LinkInfo(
+                link="not_exist_dir",
+                location=Path("tests/test_md_files/fail.md"),
+                line_num=15,
+            ),
+            err_msg="Path does not exists in repository",
             warn_msg=None,
         ),
     ]

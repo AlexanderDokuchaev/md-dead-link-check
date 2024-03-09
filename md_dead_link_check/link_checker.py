@@ -103,7 +103,9 @@ def check_web_links(md_data: Dict[str, MarkdownInfo], config: Config, files: Lis
     return ret
 
 
-def check_path_links(md_data: Dict[str, MarkdownInfo], root_dir: Path, config: Config) -> List[StatusInfo]:
+def check_path_links(
+    md_data: Dict[str, MarkdownInfo], root_dir: Path, config: Config, files_in_repo: List[Path]
+) -> List[StatusInfo]:
     ret = []
     for md_file, md_file_info in md_data.items():
         if any(fnmatch(md_file, p) for p in config.exclude_files):
@@ -126,10 +128,10 @@ def check_path_links(md_data: Dict[str, MarkdownInfo], root_dir: Path, config: C
                     if split_result.path.startswith("/"):
                         # path from git root dir
                         abs_path = root_dir / split_result.path[1:]
-                        res_path = Path(split_result.path[1:])
+                        rel_path = Path(split_result.path[1:])
                     else:
                         abs_path = (md_abs_path.parent / split_result.path).resolve()
-                        res_path = abs_path.relative_to(root_dir)
+                        rel_path = abs_path.relative_to(root_dir)
                 except ValueError:
                     ret.append(StatusInfo(md_link, "Path is not within git repository"))
                     continue
@@ -138,26 +140,29 @@ def check_path_links(md_data: Dict[str, MarkdownInfo], root_dir: Path, config: C
                     ret.append(StatusInfo(md_link, "Path is not within git repository"))
                     continue
 
-                if res_path.as_posix() not in md_data and not abs_path.exists():
-                    ret.append(StatusInfo(md_link, "Path does not exist"))
-                    continue
+                if rel_path.as_posix() in md_data:
+                    # Markdowns in repository
+                    if fragment and fragment not in md_data[rel_path.as_posix()].fragments:
+                        ret.append(StatusInfo(md_link, "Not found fragment"))
+                        continue
+                else:
+                    # Not markdown file
+                    if not any(f.is_relative_to(rel_path) for f in files_in_repo):
+                        if rel_path.exists():
+                            ret.append(StatusInfo(md_link, "File does not added to repository"))
+                        else:
+                            ret.append(StatusInfo(md_link, "Path does not exists in repository"))
+                        continue
 
-                if (
-                    fragment
-                    and res_path.as_posix() in md_data
-                    and fragment not in md_data[res_path.as_posix()].fragments
-                ):
-                    ret.append(StatusInfo(md_link, "Not found fragment"))
-                    continue
             ret.append(StatusInfo(md_link))
     return ret
 
 
 def check_all_links(
-    md_data: Dict[str, MarkdownInfo], config: Config, root_dir: Path, files: List[str]
+    md_data: Dict[str, MarkdownInfo], config: Config, root_dir: Path, files: List[str], files_in_repo: List[Path]
 ) -> List[StatusInfo]:
     status_list: List[StatusInfo] = []
     if config.check_web_links:
         status_list.extend(check_web_links(md_data, config, files))
-    status_list.extend(check_path_links(md_data, root_dir, config))
+    status_list.extend(check_path_links(md_data, root_dir, config, files_in_repo))
     return sorted(status_list)

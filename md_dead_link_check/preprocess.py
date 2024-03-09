@@ -123,7 +123,7 @@ def process_md_file(path: Path, root_dir: Path) -> MarkdownInfo:
     return MarkdownInfo(path=path, fragments=fragments, links=links)
 
 
-def preprocess_repository() -> Tuple[Dict[str, MarkdownInfo], Path]:
+def preprocess_repository() -> Tuple[Dict[str, MarkdownInfo], Path, List[Path]]:
     repo = Repo(search_parent_directories=True)
     root_dir = Path(repo.working_dir)
     list_md_files = find_all_markdowns_in_repo(repo)
@@ -131,4 +131,5 @@ def preprocess_repository() -> Tuple[Dict[str, MarkdownInfo], Path]:
     for md_file in list_md_files:
         md_info = process_md_file(md_file, root_dir)
         md_data[md_file.as_posix()] = md_info
-    return md_data, root_dir
+    files_in_repo = [Path(x) for x in repo.git.ls_files().splitlines()]
+    return md_data, root_dir, files_in_repo
