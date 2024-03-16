@@ -1,9 +1,11 @@
 name: Linter
 
 on:
+  workflow_dispatch:
   push:
     branches:
-      - '*'
+      - main
+      - release_*
   pull_request:
     types:
       - opened

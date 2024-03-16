@@ -25,6 +25,22 @@ runs:
       run: pip install md-dead-link-check==${{ inputs.version }}
       shell: bash
 
-    - name: Fetch the number's square
-      run: md-dead-link-check --config=${{ inputs.config }}
+    - name: (PR) Get all changed markdown files
+      id: changed-markdown-files
+      if: github.event_name == 'pull_request'
+      uses: tj-actions/changed-files@v43
+      with:
+        files: |
+            **.md
+
+    - name: (PR) Check links
+      if: github.event_name == 'pull_request'
+      env:
+        CHANGED_FILES: ${{ steps.changed-markdown-files.outputs.all_changed_files }}
+      run: md-dead-link-check --hook ${CHANGED_FILES}
+      shell: bash
+
+    - name: Check all links
+      if: github.event_name != 'pull_request'
+      run: md-dead-link-check
       shell: bash
