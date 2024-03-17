@@ -56,11 +56,11 @@ def test_fails():
         ),
         StatusInfo(
             link_info=LinkInfo(link="/test/fail.md1", location=Path("tests/test_md_files/fail.md"), line_num=8),
-            err_msg="Path does not exists in repository",
+            err_msg="Path not found",
         ),
         StatusInfo(
             link_info=LinkInfo(link="fail.md1", location=Path("tests/test_md_files/fail.md"), line_num=9),
-            err_msg="Path does not exists in repository",
+            err_msg="Path not found",
         ),
         StatusInfo(
             link_info=LinkInfo(
@@ -68,7 +68,7 @@ def test_fails():
                 location=Path("tests/test_md_files/fail.md"),
                 line_num=13,
             ),
-            err_msg="Not found fragment",
+            err_msg="Fragment not found",
             warn_msg=None,
         ),
         StatusInfo(
@@ -77,7 +77,7 @@ def test_fails():
                 location=Path("tests/test_md_files/fail.md"),
                 line_num=15,
             ),
-            err_msg="Path does not exists in repository",
+            err_msg="Path not found",
             warn_msg=None,
         ),
     ]
@@ -128,7 +128,7 @@ def test_exclude_links(exclude_links):
                 location=Path("tests/test_md_files/fail.md"),
                 line_num=13,
             ),
-            err_msg="Not found fragment",
+            err_msg="Fragment not found",
             warn_msg=None,
         ),
         StatusInfo(
@@ -137,7 +137,7 @@ def test_exclude_links(exclude_links):
                 location=Path("tests/test_md_files/fail.md"),
                 line_num=15,
             ),
-            err_msg="Path does not exists in repository",
+            err_msg="Path not found",
             warn_msg=None,
         ),
     ]

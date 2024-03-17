@@ -17,6 +17,11 @@ from md_dead_link_check.preprocess import MarkdownInfo
 
 TIMEOUT_RESPONSE_CODE = 408
 
+MSG_TIMEOUT = "408: Timeout"
+MSG_PATH_NOT_FOUND = "Path not found"
+MSG_PATH_NOT_ADDED = "Path not added to repository"
+MSG_FRAGMENT_NOT_FOUND = "Fragment not found"
+
 
 @dataclass
 class StatusInfo:
@@ -65,8 +70,8 @@ async def process_link(link: str, session: ClientSession, config: Config) -> Lin
         return LinkStatus(link, str(e))
     except asyncio.TimeoutError:
         if TIMEOUT_RESPONSE_CODE in config.catch_response_codes:
-            return LinkStatus(link, err_msg="408: Timeout")
-        return LinkStatus(link, warn_msg="408: Timeout")
+            return LinkStatus(link, err_msg=MSG_TIMEOUT)
+        return LinkStatus(link, warn_msg=MSG_TIMEOUT)
 
     return LinkStatus(link)
 
@@ -121,7 +126,7 @@ def check_path_links(
 
             if not split_result.path:
                 if fragment not in md_file_info.fragments:
-                    ret.append(StatusInfo(md_link, "Not found header"))
+                    ret.append(StatusInfo(md_link, MSG_FRAGMENT_NOT_FOUND))
                     continue
             else:
                 try:
@@ -133,25 +138,25 @@ def check_path_links(
                         abs_path = (md_abs_path.parent / split_result.path).resolve()
                         rel_path = abs_path.relative_to(root_dir)
                 except ValueError:
-                    ret.append(StatusInfo(md_link, "Path is not within git repository"))
+                    ret.append(StatusInfo(md_link, MSG_PATH_NOT_FOUND))
                     continue
 
                 if abs_path.as_posix() != abs_path.resolve().as_posix():
-                    ret.append(StatusInfo(md_link, "Path is not within git repository"))
+                    ret.append(StatusInfo(md_link, MSG_PATH_NOT_FOUND))
                     continue
 
                 if rel_path.as_posix() in md_data:
                     # Markdowns in repository
                     if fragment and fragment not in md_data[rel_path.as_posix()].fragments:
-                        ret.append(StatusInfo(md_link, "Not found fragment"))
+                        ret.append(StatusInfo(md_link, MSG_FRAGMENT_NOT_FOUND))
                         continue
                 else:
                     # Not markdown file
                     if not any(f.as_posix().startswith(rel_path.as_posix()) for f in files_in_repo):
                         if rel_path.exists():
-                            ret.append(StatusInfo(md_link, "File does not added to repository"))
+                            ret.append(StatusInfo(md_link, MSG_PATH_NOT_ADDED))
                         else:
-                            ret.append(StatusInfo(md_link, "Path does not exists in repository"))
+                            ret.append(StatusInfo(md_link, MSG_PATH_NOT_FOUND))
                         continue
 
             ret.append(StatusInfo(md_link))
