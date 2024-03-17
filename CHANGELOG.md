@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6
+
+- Github Action checks web link in changed files only for pull request events.
+- Updated error messages.
+- MIT license.
+
 ## 0.5
 
 - Fixed converting header with link to fragment.
