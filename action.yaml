@@ -37,10 +37,10 @@ runs:
       if: github.event_name == 'pull_request'
       env:
         CHANGED_FILES: ${{ steps.changed-markdown-files.outputs.all_changed_files }}
-      run: md-dead-link-check --hook ${CHANGED_FILES}
+      run: md-dead-link-check --config=${{ inputs.config }} --hook ${CHANGED_FILES}
       shell: bash
 
     - name: Check all links
       if: github.event_name != 'pull_request'
-      run: md-dead-link-check
+      run: md-dead-link-check --config=${{ inputs.config }}
       shell: bash

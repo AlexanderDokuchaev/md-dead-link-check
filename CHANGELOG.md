@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.7
+
+- Fixed github action to set not default config file.
+- Updated readme of usage github actions.
+
 ## 0.6
 
 - Github Action checks web link in changed files only for pull request events.

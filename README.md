@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
-      - uses: AlexanderDokuchaev/md-dead-link-check@v0.6
+      - uses: AlexanderDokuchaev/md-dead-link-check@v0.7
 ```
 
 ### Option 2: Pre-Commit
@@ -55,6 +55,44 @@ Adding to your `.pre-commit-config.yaml` to integrate in [pre-commit](https://pr
     rev: "v0.6"
     hooks:
       - id: md-dead-link-check
+```
+
+> [!NOTE]
+> For the `pull_request` event type, the action will only check external links for files that have been modified.
+> To scan all links, consider using a separate action that runs periodically on target branches.
+> This approach helps prevent pull request merges from being blocked by broken links unrelated to the files
+> modified in the pull request.
+
+```yaml
+# .github/workflows/nightly.yaml
+name: nightly
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+jobs:
+  md-dead-link-check:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: AlexanderDokuchaev/md-dead-link-check@v0.7
+```
+
+```yaml
+# .github/workflows/pull_request.yaml
+name: pull_request
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+jobs:
+  md-dead-link-check:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: AlexanderDokuchaev/md-dead-link-check@v0.7
 ```
 
 ### Option 3: Install from pip
