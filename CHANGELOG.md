@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8
+
+- Retry get request in case of head request return 404.
+
 ## 0.7
 
 - Fixed github action to set not default config file.

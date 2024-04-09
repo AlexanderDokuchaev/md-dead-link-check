@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
-      - uses: AlexanderDokuchaev/md-dead-link-check@v0.7
+      - uses: AlexanderDokuchaev/md-dead-link-check@v0.8
 ```
 
 ### Option 2: Pre-Commit
@@ -75,7 +75,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
-      - uses: AlexanderDokuchaev/md-dead-link-check@v0.7
+      - uses: AlexanderDokuchaev/md-dead-link-check@v0.8
 ```
 
 ```yaml
@@ -92,7 +92,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
-      - uses: AlexanderDokuchaev/md-dead-link-check@v0.7
+      - uses: AlexanderDokuchaev/md-dead-link-check@v0.8
 ```
 
 ### Option 3: Install from pip
