@@ -58,7 +58,9 @@ async def process_link(link: str, session: ClientSession, config: Config) -> Lin
             response = await session.get(**kwargs)
         else:
             response = await session.head(**kwargs)
-
+            if response.status == 404:
+                # Some web sites are not supports head request and return 404 code
+                response = await session.get(**kwargs)
         response.raise_for_status()
     except ClientResponseError as e:
         if not config.catch_response_codes or e.status in config.catch_response_codes:
