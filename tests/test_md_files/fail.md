@@ -15,3 +15,5 @@
 [1](not_exist_dir)
 
 [1](error://urls/)
+
+[1](https://example.com/(bracket))

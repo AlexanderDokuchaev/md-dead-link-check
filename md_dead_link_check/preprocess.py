@@ -9,7 +9,7 @@ from typing import Dict, List, Tuple
 from git import Repo
 
 RE_HEADER = r"^[#]{1,6}\s*(.*)"
-RE_LINK = r"([!]{0,1})\[([^\]!]*)\]\(([^\s)]+)(?:\s*(.*?))?\)"
+RE_LINK = r"([!]{0,1})\[([^\]!]*)\]\(([^()\s]+(?:\([^()\s]*\))*)\s*(.*?)\)"
 RE_HTML_A_TAG_ID = r"<\w+\s+(?:[^>]*?\s+)?id=([\"'])(.*?)\1"
 RE_HTML_A_TAG_HREF = r"<\w+\s+(?:[^>]*?\s+)?href=([\"'])(.*?)\1"
 RE_SUB = r"[$`][^`]+?[$`]"

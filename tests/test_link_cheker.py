@@ -37,7 +37,8 @@ def test_fails():
     # Output message depends on proxy settings
     ret[1].err_msg = None
     ret[1].warn_msg = None
-
+    ret[7].err_msg = None
+    ret[7].warn_msg = None
     ref = [
         StatusInfo(
             link_info=LinkInfo(
@@ -91,6 +92,15 @@ def test_fails():
             err_msg="Unknown error",
             warn_msg=None,
         ),
+        StatusInfo(
+            link_info=LinkInfo(
+                link="https://example.com/(bracket)",
+                location=Path("tests/test_md_files/fail.md"),
+                line_num=19,
+            ),
+            err_msg=None,
+            warn_msg=None,
+        ),
     ]
     assert ret == ref
 
@@ -126,6 +136,8 @@ def test_exclude_links(exclude_links):
     # Output message depends on proxy settings
     ret[0].err_msg = None
     ret[0].warn_msg = None
+    ret[4].err_msg = None
+    ret[4].warn_msg = None
 
     ref = [
         StatusInfo(
@@ -160,6 +172,15 @@ def test_exclude_links(exclude_links):
                 line_num=17,
             ),
             err_msg="Unknown error",
+            warn_msg=None,
+        ),
+        StatusInfo(
+            link_info=LinkInfo(
+                link="https://example.com/(bracket)",
+                location=Path("tests/test_md_files/fail.md"),
+                line_num=19,
+            ),
+            err_msg=None,
             warn_msg=None,
         ),
     ]
