@@ -21,6 +21,7 @@ MSG_TIMEOUT = "408: Timeout"
 MSG_PATH_NOT_FOUND = "Path not found"
 MSG_PATH_NOT_ADDED = "Path not added to repository"
 MSG_FRAGMENT_NOT_FOUND = "Fragment not found"
+MSG_UNKNOWN_ERROR = "Unknown error"
 
 
 @dataclass
@@ -74,7 +75,11 @@ async def process_link(link: str, session: ClientSession, config: Config) -> Lin
         if TIMEOUT_RESPONSE_CODE in config.catch_response_codes:
             return LinkStatus(link, err_msg=MSG_TIMEOUT)
         return LinkStatus(link, warn_msg=MSG_TIMEOUT)
-
+    except Exception as e:
+        msg = str(e)
+        if not msg:
+            msg = MSG_UNKNOWN_ERROR
+        return LinkStatus(link, err_msg=msg)
     return LinkStatus(link)
 
 

@@ -34,8 +34,9 @@ def test_fails():
     md_data = {path: process_md_file(Path(path), root_dir)}
     ret = check_all_links(md_data, Config(), root_dir, list(md_data.keys()), TEST_FILES)
 
-    # Differ err_msg on local test and github-ci
-    ret[1].err_msg = ""
+    # Output message depends on proxy settings
+    ret[1].err_msg = None
+    ret[1].warn_msg = None
 
     ref = [
         StatusInfo(
@@ -52,7 +53,8 @@ def test_fails():
                 location=Path("tests/test_md_files/fail.md"),
                 line_num=4,
             ),
-            err_msg="",
+            err_msg=None,
+            warn_msg=None,
         ),
         StatusInfo(
             link_info=LinkInfo(link="/test/fail.md1", location=Path("tests/test_md_files/fail.md"), line_num=8),
@@ -78,6 +80,15 @@ def test_fails():
                 line_num=15,
             ),
             err_msg="Path not found",
+            warn_msg=None,
+        ),
+        StatusInfo(
+            link_info=LinkInfo(
+                link="error://urls/",
+                location=Path("tests/test_md_files/fail.md"),
+                line_num=17,
+            ),
+            err_msg="Unknown error",
             warn_msg=None,
         ),
     ]
@@ -112,15 +123,17 @@ def test_exclude_links(exclude_links):
         TEST_FILES,
     )
 
-    # Differ err_msg on local test and github-ci
-    ret[0].err_msg = ""
+    # Output message depends on proxy settings
+    ret[0].err_msg = None
+    ret[0].warn_msg = None
 
     ref = [
         StatusInfo(
             link_info=LinkInfo(
                 link="https://not_exist_github.githubcom/", location=Path("tests/test_md_files/fail.md"), line_num=4
             ),
-            err_msg="",
+            err_msg=None,
+            warn_msg=None,
         ),
         StatusInfo(
             link_info=LinkInfo(
@@ -138,6 +151,15 @@ def test_exclude_links(exclude_links):
                 line_num=15,
             ),
             err_msg="Path not found",
+            warn_msg=None,
+        ),
+        StatusInfo(
+            link_info=LinkInfo(
+                link="error://urls/",
+                location=Path("tests/test_md_files/fail.md"),
+                line_num=17,
+            ),
+            err_msg="Unknown error",
             warn_msg=None,
         ),
     ]
