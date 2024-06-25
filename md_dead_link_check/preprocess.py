@@ -68,7 +68,11 @@ def process_header_to_fragment(header: str) -> str:
             fragment = fragment.replace(res.group(0), res.group(2))
 
     fragment = fragment.lower().replace(" ", "-")
-    fragment = re.sub(r"[^a-z0-9-_]", "", fragment)
+
+    def filter_header_symbols(c: str) -> bool:
+        return c.isalpha() or c.isdigit() or c in ["-", "_"]
+
+    fragment = "".join(filter(filter_header_symbols, fragment))
     return fragment
 
 

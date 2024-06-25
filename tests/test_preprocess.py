@@ -35,6 +35,9 @@ def test_find_all_markdowns_in_repo():
         ("H $ maths $", "h--maths-"),
         ("H [text](link)", "h-text"),
         ("H [![text](link)](link)", "h-"),
+        ("🙀 header with icon", "-header-with-icon"),
+        ("דוגמא", "דוגמא"),
+        ("例子", "例子"),
     ),
 )
 def test_process_header_to_fragment(header, fragment):
