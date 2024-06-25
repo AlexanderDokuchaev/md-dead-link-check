@@ -34,3 +34,9 @@ Some text
 #### Badge
 
 [![GitHub Action](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/github_action.yml/badge.svg?branch=main "tag")](https://github.com/AlexanderDokuchaev/md-dead-link-check/actions/workflows/github_action.yml "tag")
+
+<!-- markdownlint-disable -->
+
+[top](#)
+
+[top](./b.md#)

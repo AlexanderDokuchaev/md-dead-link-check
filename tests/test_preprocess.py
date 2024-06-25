@@ -97,5 +97,15 @@ def test_process_md_file():
             location=Path("tests/test_md_files/a.md"),
             line_num=36,
         ),
+        LinkInfo(
+            link="#",
+            location=Path("tests/test_md_files/a.md"),
+            line_num=40,
+        ),
+        LinkInfo(
+            link="./b.md#",
+            location=Path("tests/test_md_files/a.md"),
+            line_num=42,
+        ),
     ]
     assert md_info.links == ref_links
