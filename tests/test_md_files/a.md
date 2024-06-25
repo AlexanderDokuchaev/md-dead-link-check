@@ -26,7 +26,7 @@ Some text
 
 [github](https://github.com/AlexanderDokuchaev)
 [b](./b.md) [d.a](b.md) `[A+B](A)`
-<a href="./d/a.md">d.a</a><a href="./d/a.md">d.a</a>
+<a href="./d/a.md" target="_blank">d.a</a><span href="./d/a.md">d.a</span>
 [d.a](/tests/test_md_files/d/a.md "tag")
 
 ### Header with `quotes` and $math$
