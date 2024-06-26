@@ -57,6 +57,8 @@ def test_process_md_file():
         "links",
         "header-with-quotes-and-math",
         "badge",
+        "badge-1",
+        "badge-2",
     ]
 
     ref_links = [
@@ -109,6 +111,21 @@ def test_process_md_file():
             link="./b.md#",
             location=Path("tests/test_md_files/a.md"),
             line_num=42,
+        ),
+        LinkInfo(
+            link="#badge",
+            location=Path("tests/test_md_files/a.md"),
+            line_num=49,
+        ),
+        LinkInfo(
+            link="#badge-1",
+            location=Path("tests/test_md_files/a.md"),
+            line_num=50,
+        ),
+        LinkInfo(
+            link="#badge-2",
+            location=Path("tests/test_md_files/a.md"),
+            line_num=51,
         ),
     ]
     assert md_info.links == ref_links

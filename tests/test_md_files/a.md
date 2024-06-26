@@ -40,3 +40,12 @@ Some text
 [top](#)
 
 [top](./b.md#)
+
+
+- ## badge
+
+ + ## badge
+
+[0](#badge)
+[1](#badge-1)
+[1](#badge-2)

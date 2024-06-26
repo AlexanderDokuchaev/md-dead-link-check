@@ -8,7 +8,7 @@ from typing import Dict, List, Tuple
 
 from git import Repo
 
-RE_HEADER = r"^[#]{1,6}\s*(.*)"
+RE_HEADER = r"^(?:\s*[-+*]\s+|)[#]{1,6}\s*(.*)"
 RE_LINK = r"([!]{0,1})\[([^\]!]*)\]\(([^()\s]+(?:\([^()\s]*\))*)\s*(.*?)\)"
 RE_HTML_A_TAG_ID = r"<\w+\s+(?:[^>]*?\s+)?id=([\"'])(.*?)\1"
 RE_HTML_A_TAG_HREF = r"<\w+\s+(?:[^>]*?\s+)?href=([\"'])(.*?)\1"
@@ -96,7 +96,12 @@ def process_md_file(path: Path, root_dir: Path) -> MarkdownInfo:
             # Detect headers
             res = re.match(RE_HEADER, line)
             if res:
-                fragment = process_header_to_fragment(res.group(1))
+                _fragment = process_header_to_fragment(res.group(1))
+                fragment = _fragment
+                repeat = 0
+                while fragment in fragments:
+                    repeat += 1
+                    fragment = f"{_fragment}-{repeat}"
                 fragments.append(fragment)
                 continue
 
