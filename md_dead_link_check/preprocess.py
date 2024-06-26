@@ -10,7 +10,7 @@ from git import Repo
 
 RE_HEADER = r"^(?:\s*[-+*]\s+|)[#]{1,6}\s*(.*)"
 RE_LINK = r"([!]{0,1})\[([^\]!]*)\]\(([^()\s]+(?:\([^()\s]*\))*)\s*(.*?)\)"
-RE_HTML_A_TAG_ID = r"<\w+\s+(?:[^>]*?\s+)?id=([\"'])(.*?)\1"
+RE_HTML_A_TAG_ID = r"<\w+\s+(?:[^>]*?\s+)?(?:id|name)=([\"'])(.*?)\1"
 RE_HTML_A_TAG_HREF = r"<\w+\s+(?:[^>]*?\s+)?href=([\"'])(.*?)\1"
 RE_SUB = r"[$`][^`]+?[$`]"
 
@@ -123,7 +123,7 @@ def process_md_file(path: Path, root_dir: Path) -> MarkdownInfo:
             # Detect id under a tag <a id="introduction"></a>
             matches = re.findall(RE_HTML_A_TAG_ID, line)
             for _, id in matches:
-                fragments.append(id)
+                fragments.append(id.lower())
 
             # Detect links under a tag <a href="introduction"></a>
             matches = re.findall(RE_HTML_A_TAG_HREF, line)
