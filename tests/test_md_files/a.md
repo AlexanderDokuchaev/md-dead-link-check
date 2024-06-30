@@ -49,3 +49,7 @@ Some text
 [0](#badge)
 [1](#badge-1)
 [1](#badge-2)
+
+#### Some [link](b.md) [link2](b.md)
+
+#### Some tag<a id="id"><a id="id2"></a> asd <a id="id3"></a>

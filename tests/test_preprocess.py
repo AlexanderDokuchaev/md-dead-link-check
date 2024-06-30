@@ -38,6 +38,7 @@ def test_find_all_markdowns_in_repo():
         ("🙀 header with icon", "-header-with-icon"),
         ("דוגמא", "דוגמא"),
         ("例子", "例子"),
+        ("text (br)", "text"),
     ),
 )
 def test_process_header_to_fragment(header, fragment):
@@ -59,6 +60,11 @@ def test_process_md_file():
         "badge",
         "badge-1",
         "badge-2",
+        "some-link-link2",
+        "some-tag-asd-",
+        "id",
+        "id2",
+        "id3",
     ]
 
     ref_links = [
@@ -126,6 +132,16 @@ def test_process_md_file():
             link="#badge-2",
             location=Path("tests/test_md_files/a.md"),
             line_num=51,
+        ),
+        LinkInfo(
+            link="b.md",
+            location=Path("tests/test_md_files/a.md"),
+            line_num=53,
+        ),
+        LinkInfo(
+            link="b.md",
+            location=Path("tests/test_md_files/a.md"),
+            line_num=53,
         ),
     ]
     assert md_info.links == ref_links
