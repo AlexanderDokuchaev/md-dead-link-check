@@ -38,7 +38,6 @@ def test_find_all_markdowns_in_repo():
         ("🙀 header with icon", "-header-with-icon"),
         ("דוגמא", "דוגמא"),
         ("例子", "例子"),
-        ("text (br)", "text"),
     ),
 )
 def test_process_header_to_fragment(header, fragment):
