@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.9
+
+- Support headers with links and html tags
+- Support list of headers
+- Support any langues
+- Detect links with brackets
+- Detect html tags with several arguments
+- Fix crash on incorrect links
+
 ## 0.8
 
 - Retry get request in case of head request return 404.
