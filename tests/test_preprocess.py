@@ -142,5 +142,20 @@ def test_process_md_file():
             location=Path("tests/test_md_files/a.md"),
             line_num=53,
         ),
+        LinkInfo(
+            link="mailto:example@example.example",
+            location=Path("tests/test_md_files/a.md"),
+            line_num=57,
+        ),
+        LinkInfo(
+            link="mailto:example@example.example",
+            location=Path("tests/test_md_files/a.md"),
+            line_num=59,
+        ),
+        LinkInfo(
+            link="ftp://example.example/example",
+            location=Path("tests/test_md_files/a.md"),
+            line_num=61,
+        ),
     ]
     assert md_info.links == ref_links
