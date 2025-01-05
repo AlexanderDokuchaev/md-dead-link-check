@@ -91,7 +91,7 @@ def test_fails():
                 location=Path("tests/test_md_files/fail.md"),
                 line_num=17,
             ),
-            err_msg="Unknown error",
+            err_msg="error://urls/",
             warn_msg=None,
         ),
         StatusInfo(
@@ -173,7 +173,7 @@ def test_exclude_links(exclude_links):
                 location=Path("tests/test_md_files/fail.md"),
                 line_num=17,
             ),
-            err_msg="Unknown error",
+            err_msg="error://urls/",
             warn_msg=None,
         ),
         StatusInfo(
