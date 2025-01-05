@@ -23,6 +23,7 @@ MSG_PATH_NOT_FOUND = "Path not found"
 MSG_PATH_NOT_ADDED = "Path not added to repository"
 MSG_FRAGMENT_NOT_FOUND = "Fragment not found"
 MSG_UNKNOWN_ERROR = "Unknown error"
+MSG_PARSING_ERROR = "Error parsing link"
 IGNORED_PROTOCOLS = ("ftp", "sftp")
 
 
@@ -118,6 +119,8 @@ def generate_delays_for_one_domain_links(links: List[str], config: Config) -> Li
 
 
 def check_web_links(md_data: Dict[str, MarkdownInfo], config: Config, files: List[str]) -> List[StatusInfo]:
+    ret: List[StatusInfo] = []
+
     web_links: List[LinkInfo] = []
     for md_file in files:
         if md_file not in md_data:
@@ -126,11 +129,16 @@ def check_web_links(md_data: Dict[str, MarkdownInfo], config: Config, files: Lis
         if any(fnmatch(md_file, p) for p in config.exclude_files):
             continue
         for li in md_file_info.links:
-            if urlsplit(li.link).scheme in IGNORED_PROTOCOLS:
+            try:
+                split_result = urlsplit(li.link)
+            except ValueError:
+                # Dont add error to avoid duplication error message
+                continue
+            if split_result.scheme in IGNORED_PROTOCOLS:
                 continue
             if any(fnmatch(li.link, p) for p in config.exclude_links):
                 continue
-            if urlsplit(li.link).netloc:
+            if split_result.netloc:
                 web_links.append(li)
 
     # Check only unique links
@@ -140,7 +148,6 @@ def check_web_links(md_data: Dict[str, MarkdownInfo], config: Config, files: Lis
 
     links_status_dict = {li.link: li for li in links_status}
 
-    ret = []
     for wl in web_links:
         li_status = links_status_dict[wl.link]
         ret.append(StatusInfo(wl, err_msg=li_status.err_msg, warn_msg=li_status.warn_msg))
@@ -150,7 +157,8 @@ def check_web_links(md_data: Dict[str, MarkdownInfo], config: Config, files: Lis
 def check_path_links(
     md_data: Dict[str, MarkdownInfo], root_dir: Path, config: Config, files_in_repo: List[Path]
 ) -> List[StatusInfo]:
-    ret = []
+    ret: List[StatusInfo] = []
+
     for md_file, md_file_info in md_data.items():
         if any(fnmatch(md_file, p) for p in config.exclude_files):
             continue
@@ -161,7 +169,13 @@ def check_path_links(
                 continue
             if any(fnmatch(md_link.link, p) for p in config.exclude_links):
                 continue
-            split_result = urlsplit(md_link.link)
+
+            try:
+                split_result = urlsplit(md_link.link)
+            except ValueError:
+                ret.append(StatusInfo(md_link, MSG_PARSING_ERROR))
+                continue
+
             if split_result.scheme or split_result.netloc:
                 continue
             fragment = split_result.fragment.lower()
