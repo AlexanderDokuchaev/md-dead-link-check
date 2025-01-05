@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0
+
+- Added throttling to avoid hitting rate limits on external services.
+- Filter `ftp` and `sftp` protocols for links.
+- FIlter prefixes for the links like `mailto:`.
+- Added `python_version` to the action inputs.
+- Catch exception for `urllib.parse.urlsplit` in case of incorrect url.
+- Added support `atx_closed` style of headers.
+- Fix parsing one line code block with triple backticks.
+
 ## 0.9
 
 - Support headers with links and html tags
