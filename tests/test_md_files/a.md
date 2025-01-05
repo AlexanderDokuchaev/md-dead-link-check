@@ -19,10 +19,10 @@ $ [A+B](A) $ text $ [A+B](A) $
 #### Grave
 
 Some text
-`[A+B](A)`
+```[A+B](A)```
 `[A+B](A)` text `[A+B](A)`
 
-## links
+## links ##
 
 [github](https://github.com/AlexanderDokuchaev)
 [b](./b.md) [d.a](b.md) `[A+B](A)`
