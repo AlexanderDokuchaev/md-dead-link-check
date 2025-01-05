@@ -23,6 +23,9 @@ class Config:
     force_get_requests_for_links: List[str] = field(default_factory=lambda: [])
     check_web_links: bool = True
     validate_ssl: bool = True
+    throttle_groups: int = 100
+    throttle_delay: int = 20
+    throttle_max_delay: int = 100
 
 
 def get_config(root_dir: Path, config_path: Optional[Path]) -> Config:

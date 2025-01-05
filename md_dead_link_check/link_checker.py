@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import asyncio
+from collections import defaultdict
 from dataclasses import dataclass
 from fnmatch import fnmatch
 from pathlib import Path
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional
 from urllib.parse import urlsplit
 
 from aiohttp import ClientSession
@@ -41,20 +42,33 @@ class LinkStatus:
     warn_msg: Optional[str] = None
 
 
-async def process_link(link: str, session: ClientSession, config: Config) -> LinkStatus:
+@dataclass
+class LinkWithDelay:
+    link: str
+    delay: int
+
+
+async def process_link(data: LinkWithDelay, session: ClientSession, config: Config) -> LinkStatus:
     """
     Asynchronously processes a link to check its status and gather information.
     Timeout is not interpolated as error, because timeout often occur due to temporary server issues and
     retrying the request might be more appropriate than treating it as an immediate failure.
     """
-    try:
+    link = data.link
+    delay = data.delay
 
-        kwargs = {
-            "url": link,
-            "allow_redirects": True,
-            "timeout": config.timeout,
-            "ssl": config.validate_ssl,
-        }
+    kwargs = {
+        "url": link,
+        "allow_redirects": True,
+        "timeout": config.timeout,
+        "ssl": config.validate_ssl,
+    }
+
+    try:
+        # Use delay to avoid rate limiting (429: Too Many Requests)
+        if delay:
+            await asyncio.sleep(delay)
+
         if any(fnmatch(link, p) for p in config.force_get_requests_for_links):
             response = await session.get(**kwargs)
         else:
@@ -83,9 +97,22 @@ async def process_link(link: str, session: ClientSession, config: Config) -> Lin
     return LinkStatus(link)
 
 
-async def async_check_links(links: Set[str], config: Config) -> List[LinkStatus]:
+async def async_check_links(links: List[LinkWithDelay], config: Config) -> List[LinkStatus]:
     async with ClientSession(trust_env=True) as session:
         ret = await asyncio.gather(*[process_link(li, session, config) for li in links])
+    return ret
+
+
+def generate_delays_for_one_domain_links(links: List[str], config: Config) -> List[LinkWithDelay]:
+    domain_count: Dict[str, int] = defaultdict(int)
+    ret: List[LinkWithDelay] = []
+
+    for link in links:
+        domain = urlsplit(link).netloc
+        delay = min(domain_count[domain] // config.throttle_groups * config.throttle_delay, config.throttle_max_delay)
+        ret.append(LinkWithDelay(link, delay))
+        domain_count[domain] += 1
+
     return ret
 
 
@@ -104,8 +131,10 @@ def check_web_links(md_data: Dict[str, MarkdownInfo], config: Config, files: Lis
                 web_links.append(li)
 
     # Check only unique links
-    unique_links = set(li.link for li in web_links)
-    links_status = asyncio.run(async_check_links(unique_links, config))
+    unique_links = list(set(li.link for li in web_links))
+    links_with_delay = generate_delays_for_one_domain_links(unique_links, config)
+    links_status = asyncio.run(async_check_links(links_with_delay, config))
+
     links_status_dict = {li.link: li for li in links_status}
 
     ret = []

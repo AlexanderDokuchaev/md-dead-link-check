@@ -136,6 +136,9 @@ If empty, all codes greater than 400 will be marked as failures. Default: `[404,
 - force_get_requests_for_links: List of links for which the tool will use `GET` requests during checks. Default: `[]`.
 - check_web_links: Toggle web link checks on or off. Default: `true`.
 - validate_ssl: Toggles whether to validate SSL certificates when checking web links. Default: `true`.
+- throttle_groups: Number of domain groups to divide requests across for throttling. Default: `100` seconds.
+- throttle_delay: Time to wait between requests, scaled by domain load and group size. Default: `20` seconds.
+- throttle_max_delay: Maximum allowable delay (in seconds) for throttling a single domain. Default: `100` seconds.
 
 > [!TIP]
 > Leverage wildcard patterns ([fnmatch](https://docs.python.org/3/library/fnmatch.html) syntax) for
@@ -150,4 +153,7 @@ check_web_links = true
 catch_response_codes = [404, 410, 500]
 force_get_requests_for_links = []
 validate_ssl = true
+throttle_groups = 100
+throttle_delay = 20
+throttle_max_delay = 100
 ```
