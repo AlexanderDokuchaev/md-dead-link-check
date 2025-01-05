@@ -103,6 +103,15 @@ def test_fails():
             err_msg=None,
             warn_msg=None,
         ),
+        StatusInfo(
+            link_info=LinkInfo(
+                link="https://example.com]https://example.com",
+                location=Path("tests/test_md_files/fail.md"),
+                line_num=21,
+            ),
+            err_msg="Error parsing link",
+            warn_msg=None,
+        ),
     ]
     assert ret == ref
 
@@ -183,6 +192,15 @@ def test_exclude_links(exclude_links):
                 line_num=19,
             ),
             err_msg=None,
+            warn_msg=None,
+        ),
+        StatusInfo(
+            link_info=LinkInfo(
+                link="https://example.com]https://example.com",
+                location=Path("tests/test_md_files/fail.md"),
+                line_num=21,
+            ),
+            err_msg="Error parsing link",
             warn_msg=None,
         ),
     ]

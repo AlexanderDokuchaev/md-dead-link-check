@@ -17,3 +17,5 @@
 [1](error://urls/)
 
 [1](https://example.com/(bracket))
+
+[1](https://example.com]https://example.com)
