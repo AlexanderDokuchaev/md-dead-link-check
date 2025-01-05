@@ -13,13 +13,18 @@ inputs:
     description: 'Version of package'
     required: false
     default: '0.9'
+  python_version:
+    description: 'Python version'
+    required: false
+    default: '3.10'
+
 runs:
   using: 'composite'
   steps:
     - name: Install Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.10'
+        python-version: ${{ inputs.python_version }}
 
     - name: Install md-dead-link-check
       run: pip install md-dead-link-check==${{ inputs.version }}
@@ -35,9 +40,7 @@ runs:
 
     - name: (PR) Check links
       if: github.event_name == 'pull_request'
-      env:
-        CHANGED_FILES: ${{ steps.changed-markdown-files.outputs.all_changed_files }}
-      run: md-dead-link-check --config=${{ inputs.config }} --hook ${CHANGED_FILES}
+      run: md-dead-link-check --config=${{ inputs.config }} --hook ${{ steps.changed-markdown-files.outputs.all_changed_files }}
       shell: bash
 
     - name: Check all links
