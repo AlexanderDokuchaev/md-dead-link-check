@@ -3,10 +3,12 @@ from pathlib import Path
 import pytest
 
 from md_dead_link_check.config import Config
+from md_dead_link_check.link_checker import LinkWithDelay
 from md_dead_link_check.link_checker import MarkdownInfo
 from md_dead_link_check.link_checker import StatusInfo
 from md_dead_link_check.link_checker import check_all_links
 from md_dead_link_check.link_checker import check_web_links
+from md_dead_link_check.link_checker import generate_delays_for_one_domain_links
 from md_dead_link_check.preprocess import LinkInfo
 from md_dead_link_check.preprocess import process_md_file
 
@@ -185,3 +187,25 @@ def test_exclude_links(exclude_links):
         ),
     ]
     assert ret == ref
+
+
+def test_generate_delays_for_one_domain_links():
+    links = ["https://example.com/1", "https://example.com/2", "https://example.com/3", "https://example2.com/1"]
+
+    config = Config(throttle_groups=2, throttle_delay=10)
+    ret = generate_delays_for_one_domain_links(links, config)
+    assert ret == [
+        LinkWithDelay("https://example.com/1", 0),
+        LinkWithDelay("https://example.com/2", 0),
+        LinkWithDelay("https://example.com/3", 10),
+        LinkWithDelay("https://example2.com/1", 0),
+    ]
+
+    config = Config(throttle_groups=1, throttle_delay=100, throttle_max_delay=1000)
+    ret = generate_delays_for_one_domain_links(links, config)
+    assert ret == [
+        LinkWithDelay("https://example.com/1", 0),
+        LinkWithDelay("https://example.com/2", 100),
+        LinkWithDelay("https://example.com/3", 200),
+        LinkWithDelay("https://example2.com/1", 0),
+    ]
