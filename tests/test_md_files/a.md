@@ -53,3 +53,10 @@ Some text
 #### Some [link](b.md) [link2](b.md)
 
 #### Some tag<a id="id"><a id="id2"></a> asd <a id="id3"></a>
+
+[mail](mailto:example@example.example)
+
+<a href="mailto:example@example.example">mail</a>
+
+[ftp](ftp://example.example/example)
+

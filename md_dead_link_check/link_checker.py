@@ -23,6 +23,7 @@ MSG_PATH_NOT_FOUND = "Path not found"
 MSG_PATH_NOT_ADDED = "Path not added to repository"
 MSG_FRAGMENT_NOT_FOUND = "Fragment not found"
 MSG_UNKNOWN_ERROR = "Unknown error"
+IGNORED_PROTOCOLS = ("ftp", "sftp")
 
 
 @dataclass
@@ -125,6 +126,8 @@ def check_web_links(md_data: Dict[str, MarkdownInfo], config: Config, files: Lis
         if any(fnmatch(md_file, p) for p in config.exclude_files):
             continue
         for li in md_file_info.links:
+            if urlsplit(li.link).scheme in IGNORED_PROTOCOLS:
+                continue
             if any(fnmatch(li.link, p) for p in config.exclude_links):
                 continue
             if urlsplit(li.link).netloc:
@@ -159,7 +162,7 @@ def check_path_links(
             if any(fnmatch(md_link.link, p) for p in config.exclude_links):
                 continue
             split_result = urlsplit(md_link.link)
-            if split_result.netloc:
+            if split_result.scheme or split_result.netloc:
                 continue
             fragment = split_result.fragment.lower()
 
