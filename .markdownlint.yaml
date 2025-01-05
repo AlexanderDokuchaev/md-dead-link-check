@@ -4,3 +4,4 @@ default: true
 MD013: false  # Line length
 MD033: false  # Inline HTML
 MD041: false  # First line
+MD003: false  # heading-style

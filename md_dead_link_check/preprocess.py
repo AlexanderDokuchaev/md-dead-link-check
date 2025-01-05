@@ -8,7 +8,7 @@ from typing import Dict, List, Tuple
 
 from git import Repo
 
-RE_HEADER = r"^(?:\s*[-+*]\s+|)[#]{1,6}\s*(.*)"
+RE_HEADER = r"^(?:\s*[-+*]\s+|)[#]{1,6}\s*(.*?)\s*[#]*$"
 RE_LINK = r"([!]{0,1})\[([^\]!]*)\]\(([^()\s]+(?:\([^()\s]*\))*)\s*(.*?)\)"
 RE_HTML_TAG = r"</?\w+[^>]*>"
 RE_HTML_TAG_ID = r"<\w+\s+(?:[^>]*?\s+)?(?:id|name)=([\"'])(.*?)\1"
@@ -86,6 +86,9 @@ def process_md_file(path: Path, root_dir: Path) -> MarkdownInfo:
         for line_num, line in enumerate(stream.readlines(), 1):
             striped_line = line.strip()
             # Skip code blocks that can be start ``` or ````
+            res = re.match(r"^(`{3,4})(.+)`{3,4}\s*$", striped_line)
+            if res:
+                continue
             res = re.match(r"^(`{3,4})", striped_line)
             if res and not in_code_block:
                 in_code_block = res.group(1)
