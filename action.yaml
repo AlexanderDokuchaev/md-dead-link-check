@@ -12,7 +12,7 @@ inputs:
   version:
     description: 'Version of package'
     required: false
-    default: '1.0'
+    default: '1.0.1'
   python_version:
     description: 'Python version'
     required: false

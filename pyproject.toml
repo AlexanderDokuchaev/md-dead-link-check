@@ -2,7 +2,7 @@
 name = "md_dead_link_check"
 description = "This is a lightweight and fast tool to help you keep your Markdown files free of broken links."
 readme = "README.md"
-version = "1.0"
+version = "1.0.1"
 license = {text = "MIT"}
 requires-python = ">=3.8"
 dependencies = [
