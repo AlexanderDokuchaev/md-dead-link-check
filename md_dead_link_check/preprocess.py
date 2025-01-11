@@ -40,13 +40,12 @@ class MarkdownInfo:
     links: List[LinkInfo] = field(default_factory=lambda: [])
 
 
-def find_all_markdowns_in_repo(repo: Repo) -> List[Path]:
+def find_all_markdowns(all_files: List[str]) -> List[Path]:
     """
-    Finds markdown file in current repository.
+    Filter markdown files.
     """
-
     ret = []
-    for file_path in repo.git.ls_files().splitlines():
+    for file_path in all_files:
         p = Path(file_path)
         if p.suffix == ".md":
             ret.append(p)
@@ -148,13 +147,19 @@ def process_md_file(path: Path, root_dir: Path) -> MarkdownInfo:
     return MarkdownInfo(path=path, fragments=fragments, links=links)
 
 
-def preprocess_repository() -> Tuple[Dict[str, MarkdownInfo], Path, List[Path]]:
+def preprocess_repository(untracked_files: bool) -> Tuple[Dict[str, MarkdownInfo], Path, List[Path]]:
     repo = Repo(search_parent_directories=True)
     root_dir = Path(repo.working_dir)
-    list_md_files = find_all_markdowns_in_repo(repo)
+
+    all_files: List[str] = repo.git.ls_files().splitlines()
+    if untracked_files:
+        all_files += repo.untracked_files
+
+    list_md_files = find_all_markdowns(all_files)
     md_data = {}
     for md_file in list_md_files:
         md_info = process_md_file(md_file, root_dir)
         md_data[md_file.as_posix()] = md_info
-    files_in_repo = [Path(x) for x in repo.git.ls_files().splitlines()]
+
+    files_in_repo = [Path(x) for x in all_files]
     return md_data, root_dir, files_in_repo
