@@ -38,13 +38,14 @@ def args_parser() -> Namespace:
     parser.add_argument("--warn", "-w", action="store_true", help="Show warning messages.")
     parser.add_argument("--all", "-a", action="store_true", help="Show all links.")
     parser.add_argument("--no-color", "-nc", action="store_true", help="Disable coloring of output.")
+    parser.add_argument("--untrack", action="store_true", help="Check untracked files.")
     return parser.parse_args()
 
 
 def main() -> int:
     args = args_parser()
 
-    md_data, repo_dir, files_in_repo = preprocess_repository()
+    md_data, repo_dir, files_in_repo = preprocess_repository(untracked_files=args.untrack)
     config = get_config(repo_dir, args.config)
 
     files = normalize_files(args.files, repo_dir)

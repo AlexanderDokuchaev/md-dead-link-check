@@ -1,24 +1,25 @@
 from pathlib import Path
 
 import pytest
-from git import Repo
 
 from md_dead_link_check.preprocess import LinkInfo
-from md_dead_link_check.preprocess import find_all_markdowns_in_repo
+from md_dead_link_check.preprocess import find_all_markdowns
 from md_dead_link_check.preprocess import process_header_to_fragment
 from md_dead_link_check.preprocess import process_md_file
 
 
-def test_find_all_markdowns_in_repo():
-    repo = Repo(search_parent_directories=True)
-    md_files = find_all_markdowns_in_repo(repo)
+def test_find_all_markdowns():
+    files = [
+        "md_dead_link_check/__init__.py",
+        "tests/test_test.py",
+        "action.yml",
+        "CHANGELOG.md",
+        "README.md",
+    ]
+    md_files = find_all_markdowns(files)
     refs = [
         "CHANGELOG.md",
         "README.md",
-        "tests/test_md_files/a.md",
-        "tests/test_md_files/b.md",
-        "tests/test_md_files/d/a.md",
-        "tests/test_md_files/fail.md",
     ]
     refs = [Path(r) for r in refs]
     assert refs == md_files
