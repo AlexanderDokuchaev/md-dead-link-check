@@ -73,6 +73,11 @@ def test_process_md_file():
             line_num=27,
         ),
         LinkInfo(
+            link="https://github.com",
+            location=Path("tests/test_md_files/a.md"),
+            line_num=27,
+        ),
+        LinkInfo(
             link="./b.md",
             location=Path("tests/test_md_files/a.md"),
             line_num=28,
@@ -88,7 +93,7 @@ def test_process_md_file():
             line_num=29,
         ),
         LinkInfo(
-            link="./d/a.md",
+            link="https://github.com",
             location=Path("tests/test_md_files/a.md"),
             line_num=29,
         ),
@@ -156,6 +161,11 @@ def test_process_md_file():
             link="ftp://example.example/example",
             location=Path("tests/test_md_files/a.md"),
             line_num=61,
+        ),
+        LinkInfo(
+            link="https://github.com",
+            location=Path("tests/test_md_files/a.md"),
+            line_num=62,
         ),
     ]
     assert md_info.links == ref_links
