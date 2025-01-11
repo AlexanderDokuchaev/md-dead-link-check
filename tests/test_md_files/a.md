@@ -24,9 +24,9 @@ Some text
 
 ## links ##
 
-[github](https://github.com/AlexanderDokuchaev)
+[github](https://github.com/AlexanderDokuchaev) https://github.com
 [b](./b.md) [d.a](b.md) `[A+B](A)`
-<a href="./d/a.md" target="_blank">d.a</a><span href="./d/a.md">d.a</span>
+<a href="./d/a.md" target="_blank">d.a</a><span href="https://github.com">d.a</span>
 [d.a](/tests/test_md_files/d/a.md "tag")
 
 ### Header with `quotes` and $math$
@@ -59,4 +59,4 @@ Some text
 <a href="mailto:example@example.example">mail</a>
 
 [ftp](ftp://example.example/example)
-
+https://github.com.

@@ -9,6 +9,7 @@ from typing import Dict, List, Tuple
 from git import Repo
 
 RE_HEADER = r"^(?:\s*[-+*]\s+|)[#]{1,6}\s*(.*?)\s*[#]*$"
+RE_URL = r"(http[s]?://[^>)\]\s\"]+)"
 RE_LINK = r"([!]{0,1})\[([^\]!]*)\]\(([^()\s]+(?:\([^()\s]*\))*)\s*(.*?)\)"
 RE_HTML_TAG = r"</?\w+[^>]*>"
 RE_HTML_TAG_ID = r"<\w+\s+(?:[^>]*?\s+)?(?:id|name)=([\"'])(.*?)\1"
@@ -113,9 +114,11 @@ def process_md_file(path: Path, root_dir: Path) -> MarkdownInfo:
             line = re.sub(RE_SUB, "", line)
 
             # Detect links
+            copy_line = line  # Used to detect bare links
             matches = re.findall(RE_LINK, line)
             for img_tag, text, link, title in matches:
                 links.append(LinkInfo(link, path, line_num))
+                copy_line = copy_line.replace(link, "")
 
             if matches:
                 # For case [![text](img_link)](link)
@@ -123,6 +126,7 @@ def process_md_file(path: Path, root_dir: Path) -> MarkdownInfo:
                 matches2 = re.findall(RE_LINK, sub_line)
                 for img_tag, text, link, title in matches2:
                     links.append(LinkInfo(link, path, line_num))
+                    copy_line = copy_line.replace(link, "")
 
             # Detect id under a tag <a id="introduction"></a>
             matches = re.findall(RE_HTML_TAG_ID, line)
@@ -133,6 +137,14 @@ def process_md_file(path: Path, root_dir: Path) -> MarkdownInfo:
             matches = re.findall(RE_HTML_TAG_HREF, line)
             for _, link in matches:
                 links.append(LinkInfo(link, path, line_num))
+                copy_line = copy_line.replace(link, "")
+
+            # Detect simple urls without any tags
+            matches = re.findall(RE_URL, copy_line)
+            for url in matches:
+                if url.endswith("."):
+                    url = url[:-1]
+                links.append(LinkInfo(url, path, line_num))
     return MarkdownInfo(path=path, fragments=fragments, links=links)
 
 

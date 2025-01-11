@@ -1,7 +1,8 @@
 # Default state for all rules
 default: true
 
+MD003: false  # heading-style
 MD013: false  # Line length
 MD033: false  # Inline HTML
+MD034: false  # no-bare-urls
 MD041: false  # First line
-MD003: false  # heading-style
