@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 from collections import defaultdict
 from dataclasses import dataclass
+from enum import Enum
 from fnmatch import fnmatch
 from pathlib import Path
 from typing import Dict, List, Optional
@@ -27,21 +28,27 @@ MSG_PARSING_ERROR = "Error parsing link"
 IGNORED_PROTOCOLS = ("ftp", "sftp")
 
 
+class Status(int, Enum):
+    OK = 0
+    WARNING = 1
+    ERROR = 2
+
+
 @dataclass
 class StatusInfo:
     link_info: LinkInfo
-    err_msg: Optional[str] = None
-    warn_msg: Optional[str] = None
+    status: Status
+    msg: Optional[str] = None
 
     def __lt__(self, other: StatusInfo) -> bool:
-        return self.link_info < other.link_info
+        return self.status < other.status or (self.status == other.status and self.link_info < other.link_info)
 
 
 @dataclass
 class LinkStatus:
     link: str
-    err_msg: Optional[str] = None
-    warn_msg: Optional[str] = None
+    status: Status
+    msg: Optional[str] = None
 
 
 @dataclass
@@ -81,22 +88,22 @@ async def process_link(data: LinkWithDelay, session: ClientSession, config: Conf
         response.raise_for_status()
     except ClientResponseError as e:
         if not config.catch_response_codes or e.status in config.catch_response_codes:
-            return LinkStatus(link, f"{e.status}: {e.message}")
-        return LinkStatus(link, warn_msg=f"{e.status}: {e.message}")
+            return LinkStatus(link, Status.ERROR, f"{e.status}: {e.message}")
+        return LinkStatus(link, Status.WARNING, f"{e.status}: {e.message}")
     except asyncio.CancelledError as e:
-        return LinkStatus(link, str(e))
+        return LinkStatus(link, Status.ERROR, str(e))
     except ClientConnectorError as e:
-        return LinkStatus(link, str(e))
+        return LinkStatus(link, Status.ERROR, str(e))
     except asyncio.TimeoutError:
         if TIMEOUT_RESPONSE_CODE in config.catch_response_codes:
-            return LinkStatus(link, err_msg=MSG_TIMEOUT)
-        return LinkStatus(link, warn_msg=MSG_TIMEOUT)
+            return LinkStatus(link, Status.ERROR, MSG_TIMEOUT)
+        return LinkStatus(link, Status.WARNING, MSG_TIMEOUT)
     except Exception as e:
         msg = str(e)
         if not msg:
             msg = MSG_UNKNOWN_ERROR
-        return LinkStatus(link, err_msg=msg)
-    return LinkStatus(link)
+        return LinkStatus(link, Status.ERROR, msg)
+    return LinkStatus(link, Status.OK)
 
 
 async def async_check_links(links: List[LinkWithDelay], config: Config) -> List[LinkStatus]:
@@ -105,15 +112,32 @@ async def async_check_links(links: List[LinkWithDelay], config: Config) -> List[
     return ret
 
 
+def calculate_delay(counter: int, config: Config) -> int:
+    return min(counter // config.throttle_groups * config.throttle_delay, config.throttle_max_delay)
+
+
 def generate_delays_for_one_domain_links(links: List[str], config: Config) -> List[LinkWithDelay]:
-    domain_count: Dict[str, int] = defaultdict(int)
+    domain_requests_counter: Dict[str, int] = defaultdict(int)
     ret: List[LinkWithDelay] = []
 
     for link in links:
         domain = urlsplit(link).netloc
-        delay = min(domain_count[domain] // config.throttle_groups * config.throttle_delay, config.throttle_max_delay)
+        delay = calculate_delay(domain_requests_counter[domain], config)
         ret.append(LinkWithDelay(link, delay))
-        domain_count[domain] += 1
+        domain_requests_counter[domain] += 1
+
+    enabled_throttling = {d: num - 1 for d, num in domain_requests_counter.items() if num - 1 > config.throttle_groups}
+    if enabled_throttling:
+        print("Throttling applied to limit request frequency:")
+        for domain, num_request in enabled_throttling.items():
+            if num_request > config.throttle_groups:
+                max_delay = calculate_delay(num_request, config)
+                print(f" - Domain:         {domain}")
+                print(f"   Requests count: {num_request}")
+                if max_delay == config.throttle_max_delay:
+                    print(f"   Maximum delay:  {max_delay} seconds (reached throttle_max_delay)")
+                else:
+                    print(f"   Maximum delay:  {max_delay} seconds")
 
     return ret
 
@@ -150,7 +174,7 @@ def check_web_links(md_data: Dict[str, MarkdownInfo], config: Config, files: Lis
 
     for wl in web_links:
         li_status = links_status_dict[wl.link]
-        ret.append(StatusInfo(wl, err_msg=li_status.err_msg, warn_msg=li_status.warn_msg))
+        ret.append(StatusInfo(wl, li_status.status, li_status.msg))
     return ret
 
 
@@ -173,7 +197,7 @@ def check_path_links(
             try:
                 split_result = urlsplit(md_link.link)
             except ValueError:
-                ret.append(StatusInfo(md_link, MSG_PARSING_ERROR))
+                ret.append(StatusInfo(md_link, Status.ERROR, MSG_PARSING_ERROR))
                 continue
 
             if split_result.scheme or split_result.netloc:
@@ -182,7 +206,7 @@ def check_path_links(
 
             if not split_result.path:
                 if fragment not in md_file_info.fragments:
-                    ret.append(StatusInfo(md_link, MSG_FRAGMENT_NOT_FOUND))
+                    ret.append(StatusInfo(md_link, Status.ERROR, MSG_FRAGMENT_NOT_FOUND))
                     continue
             else:
                 try:
@@ -194,28 +218,28 @@ def check_path_links(
                         abs_path = (md_abs_path.parent / split_result.path).resolve()
                         rel_path = abs_path.relative_to(root_dir)
                 except ValueError:
-                    ret.append(StatusInfo(md_link, MSG_PATH_NOT_FOUND))
+                    ret.append(StatusInfo(md_link, Status.ERROR, MSG_PATH_NOT_FOUND))
                     continue
 
                 if abs_path.as_posix() != abs_path.resolve().as_posix():
-                    ret.append(StatusInfo(md_link, MSG_PATH_NOT_FOUND))
+                    ret.append(StatusInfo(md_link, Status.ERROR, MSG_PATH_NOT_FOUND))
                     continue
 
                 if rel_path.as_posix() in md_data:
                     # Markdowns in repository
                     if fragment and fragment not in md_data[rel_path.as_posix()].fragments:
-                        ret.append(StatusInfo(md_link, MSG_FRAGMENT_NOT_FOUND))
+                        ret.append(StatusInfo(md_link, Status.ERROR, MSG_FRAGMENT_NOT_FOUND))
                         continue
                 else:
                     # Not markdown file
                     if not any(f.as_posix().startswith(rel_path.as_posix()) for f in files_in_repo):
                         if rel_path.exists():
-                            ret.append(StatusInfo(md_link, MSG_PATH_NOT_ADDED))
+                            ret.append(StatusInfo(md_link, Status.ERROR, MSG_PATH_NOT_ADDED))
                         else:
-                            ret.append(StatusInfo(md_link, MSG_PATH_NOT_FOUND))
+                            ret.append(StatusInfo(md_link, Status.ERROR, MSG_PATH_NOT_FOUND))
                         continue
 
-            ret.append(StatusInfo(md_link))
+            ret.append(StatusInfo(md_link, Status.OK))
     return ret
 
 

@@ -3,6 +3,8 @@ import sys
 from pathlib import Path
 from typing import List
 
+from md_dead_link_check.config import Config
+from md_dead_link_check.link_checker import Status
 from md_dead_link_check.link_checker import StatusInfo
 
 
@@ -38,7 +40,7 @@ class SpecSymbols:
                 setattr(self, key, "")
 
 
-def summary(status: List[StatusInfo], print_warn: bool, print_all: bool, no_color: bool) -> int:
+def summary(status: List[StatusInfo], print_warn: bool, print_all: bool, no_color: bool, config: Config) -> int:
     """
     Print summary.
     Returns 0 if not found any error, otherwise 1.
@@ -47,18 +49,34 @@ def summary(status: List[StatusInfo], print_warn: bool, print_all: bool, no_colo
     if no_color:
         specs.disable_colors()
     err_nums = 0
+    count_429 = 0
+
     for x in status:
         link_msg = (
             f"{specs.blue}File:{specs.clean} {x.link_info.get_location()}"
             f" {specs.split} {specs.blue}Link:{specs.clean} {x.link_info.link}"
         )
-        if x.err_msg:
-            print(f"{link_msg} {specs.split} {specs.red}Error{specs.clean}: {x.err_msg}")
+        if x.msg is not None and "429: too many request" in x.msg.lower():
+            count_429 += 1
+
+        if x.status == Status.ERROR:
+            print(f"{link_msg} {specs.split} {specs.red}Error{specs.clean}: {x.msg}")
             err_nums += 1
-        elif x.warn_msg and (print_warn or print_all):
-            print(f"{link_msg} {specs.split} {specs.yellow}Warn{specs.clean}: {x.warn_msg}")
+        elif x.status == Status.WARNING and (print_warn or print_all):
+            print(f"{link_msg} {specs.split} {specs.yellow}Warn{specs.clean}: {x.msg}")
         elif print_all:
             print(f"{link_msg} {specs.split} {specs.green}OK{specs.clean}")
+
+    if count_429:
+        print(
+            f"\n{specs.yellow}WARNING:{specs.clean} "
+            f"{count_429} link{'s' if count_429 > 1 else ''} returned \"429: Too Many Request\" respond code. "
+            f"This indicates that one of the servers is being accessed too frequently.\n"
+            f"Wait and try again later, or adjust the configuration:\n"
+            f"throttle_groups = {max(1, config.throttle_groups // 2)}\n"
+            f"throttle_delay = {config.throttle_delay}\n"
+            f"throttle_max_delay = {config.throttle_max_delay * 2}\n"
+        )
 
     if err_nums:
         cat_repeat = 0 if no_color else max(min(err_nums // 10, 5), 1)
