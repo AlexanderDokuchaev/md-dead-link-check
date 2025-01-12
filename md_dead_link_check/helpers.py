@@ -3,7 +3,6 @@ import sys
 from pathlib import Path
 from typing import List
 
-from md_dead_link_check.config import Config
 from md_dead_link_check.link_checker import Status
 from md_dead_link_check.link_checker import StatusInfo
 
@@ -40,7 +39,7 @@ class SpecSymbols:
                 setattr(self, key, "")
 
 
-def summary(status: List[StatusInfo], print_warn: bool, print_all: bool, no_color: bool, config: Config) -> int:
+def summary(status: List[StatusInfo], print_warn: bool, print_all: bool, no_color: bool) -> int:
     """
     Print summary.
     Returns 0 if not found any error, otherwise 1.
@@ -72,10 +71,8 @@ def summary(status: List[StatusInfo], print_warn: bool, print_all: bool, no_colo
             f"\n{specs.yellow}WARNING:{specs.clean} "
             f"{count_429} link{'s' if count_429 > 1 else ''} returned \"429: Too Many Request\" respond code. "
             f"This indicates that one of the servers is being accessed too frequently.\n"
-            f"Wait and try again later, or adjust the configuration:\n"
-            f"throttle_groups = {max(1, config.throttle_groups // 2)}\n"
-            f"throttle_delay = {config.throttle_delay}\n"
-            f"throttle_max_delay = {config.throttle_max_delay * 2}\n"
+            f"To more information visit "
+            "https://github.com/AlexanderDokuchaev/md-dead-link-check/#rate-limiting-and-request-throttling"
         )
 
     if err_nums:

@@ -53,7 +53,7 @@ def main() -> int:
         files = list(md_data)
 
     status_list = check_all_links(md_data, config, repo_dir, files, files_in_repo)
-    err_num = summary(status_list, args.warn, args.all, args.no_color, config)
+    err_num = summary(status_list, args.warn, args.all, args.no_color)
 
     return min(err_num, 1)
 

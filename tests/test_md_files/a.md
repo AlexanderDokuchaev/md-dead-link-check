@@ -60,3 +60,11 @@ Some text
 
 [ftp](ftp://example.example/example)
 https://github.com.
+
+<!-- md-dead-link-check: off -->
+
+https://github.com
+
+<!-- md-dead-link-check: on -->
+
+https://github.com
