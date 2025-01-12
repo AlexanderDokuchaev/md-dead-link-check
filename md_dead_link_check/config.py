@@ -46,4 +46,12 @@ def get_config(root_dir: Path, config_path: Optional[Path]) -> Config:
                     f"Unexpected config key `{key}` in {config_path.name}. "
                     f"Available keys: [{', '.join(config.__annotations__)}]"
                 )
+    if not isinstance(config.timeout, int) or config.timeout < 1:
+        raise ValueError("`timeout` must be an integer greater than or equal to 1.")
+    if not isinstance(config.throttle_groups, int) or config.throttle_groups < 1:
+        raise ValueError("`throttle_groups` must be an integer greater than or equal to 1.")
+    if not isinstance(config.throttle_delay, int) or config.throttle_delay < 0:
+        raise ValueError("`throttle_delay` must be a non-negative float or integer.")
+    if not isinstance(config.throttle_max_delay, int) or config.throttle_max_delay < 0:
+        raise ValueError("`throttle_max_delay` must be a non-negative integer.")
     return config

@@ -5,6 +5,7 @@ import pytest
 from md_dead_link_check.config import Config
 from md_dead_link_check.link_checker import LinkWithDelay
 from md_dead_link_check.link_checker import MarkdownInfo
+from md_dead_link_check.link_checker import Status
 from md_dead_link_check.link_checker import StatusInfo
 from md_dead_link_check.link_checker import check_all_links
 from md_dead_link_check.link_checker import check_web_links
@@ -24,7 +25,7 @@ def test_check_link(url, msg):
     config = Config()
     data = {"test.md": MarkdownInfo("test.md", links=[LinkInfo(url, Path("test.md"), 0)])}
     [r] = check_web_links(data, config, ["test.md"])
-    assert r.err_msg == msg
+    assert r.msg == msg
 
 
 TEST_FILES = [Path("tests/test_md_files/fail.md"), Path("tests/test_md_files/a.md")]
@@ -37,10 +38,10 @@ def test_fails():
     ret = check_all_links(md_data, Config(), root_dir, list(md_data.keys()), TEST_FILES)
 
     # Output message depends on proxy settings
-    ret[1].err_msg = None
-    ret[1].warn_msg = None
-    ret[7].err_msg = None
-    ret[7].warn_msg = None
+    ret[1].msg = None
+    ret[1].status = None
+    ret[7].msg = None
+    ret[7].status = None
     ref = [
         StatusInfo(
             link_info=LinkInfo(
@@ -48,7 +49,8 @@ def test_fails():
                 location=Path("tests/test_md_files/fail.md"),
                 line_num=3,
             ),
-            err_msg="404: Not Found",
+            status=Status.ERROR,
+            msg="404: Not Found",
         ),
         StatusInfo(
             link_info=LinkInfo(
@@ -56,16 +58,18 @@ def test_fails():
                 location=Path("tests/test_md_files/fail.md"),
                 line_num=4,
             ),
-            err_msg=None,
-            warn_msg=None,
+            status=None,
+            msg=None,
         ),
         StatusInfo(
             link_info=LinkInfo(link="/test/fail.md1", location=Path("tests/test_md_files/fail.md"), line_num=8),
-            err_msg="Path not found",
+            status=Status.ERROR,
+            msg="Path not found",
         ),
         StatusInfo(
             link_info=LinkInfo(link="fail.md1", location=Path("tests/test_md_files/fail.md"), line_num=9),
-            err_msg="Path not found",
+            status=Status.ERROR,
+            msg="Path not found",
         ),
         StatusInfo(
             link_info=LinkInfo(
@@ -73,8 +77,8 @@ def test_fails():
                 location=Path("tests/test_md_files/fail.md"),
                 line_num=13,
             ),
-            err_msg="Fragment not found",
-            warn_msg=None,
+            status=Status.ERROR,
+            msg="Fragment not found",
         ),
         StatusInfo(
             link_info=LinkInfo(
@@ -82,8 +86,8 @@ def test_fails():
                 location=Path("tests/test_md_files/fail.md"),
                 line_num=15,
             ),
-            err_msg="Path not found",
-            warn_msg=None,
+            status=Status.ERROR,
+            msg="Path not found",
         ),
         StatusInfo(
             link_info=LinkInfo(
@@ -91,8 +95,8 @@ def test_fails():
                 location=Path("tests/test_md_files/fail.md"),
                 line_num=17,
             ),
-            err_msg="error://urls/",
-            warn_msg=None,
+            status=Status.ERROR,
+            msg="error://urls/",
         ),
         StatusInfo(
             link_info=LinkInfo(
@@ -100,8 +104,8 @@ def test_fails():
                 location=Path("tests/test_md_files/fail.md"),
                 line_num=19,
             ),
-            err_msg=None,
-            warn_msg=None,
+            msg=None,
+            status=None,
         ),
         StatusInfo(
             link_info=LinkInfo(
@@ -109,8 +113,8 @@ def test_fails():
                 location=Path("tests/test_md_files/fail.md"),
                 line_num=21,
             ),
-            err_msg="Error parsing link",
-            warn_msg=None,
+            status=Status.ERROR,
+            msg="Error parsing link",
         ),
     ]
     assert ret == ref
@@ -145,18 +149,18 @@ def test_exclude_links(exclude_links):
     )
 
     # Output message depends on proxy settings
-    ret[0].err_msg = None
-    ret[0].warn_msg = None
-    ret[4].err_msg = None
-    ret[4].warn_msg = None
+    ret[0].status = None
+    ret[0].msg = None
+    ret[4].status = None
+    ret[4].msg = None
 
     ref = [
         StatusInfo(
             link_info=LinkInfo(
                 link="https://not_exist_github.githubcom/", location=Path("tests/test_md_files/fail.md"), line_num=4
             ),
-            err_msg=None,
-            warn_msg=None,
+            status=None,
+            msg=None,
         ),
         StatusInfo(
             link_info=LinkInfo(
@@ -164,8 +168,8 @@ def test_exclude_links(exclude_links):
                 location=Path("tests/test_md_files/fail.md"),
                 line_num=13,
             ),
-            err_msg="Fragment not found",
-            warn_msg=None,
+            status=Status.ERROR,
+            msg="Fragment not found",
         ),
         StatusInfo(
             link_info=LinkInfo(
@@ -173,8 +177,8 @@ def test_exclude_links(exclude_links):
                 location=Path("tests/test_md_files/fail.md"),
                 line_num=15,
             ),
-            err_msg="Path not found",
-            warn_msg=None,
+            status=Status.ERROR,
+            msg="Path not found",
         ),
         StatusInfo(
             link_info=LinkInfo(
@@ -182,8 +186,8 @@ def test_exclude_links(exclude_links):
                 location=Path("tests/test_md_files/fail.md"),
                 line_num=17,
             ),
-            err_msg="error://urls/",
-            warn_msg=None,
+            status=Status.ERROR,
+            msg="error://urls/",
         ),
         StatusInfo(
             link_info=LinkInfo(
@@ -191,8 +195,8 @@ def test_exclude_links(exclude_links):
                 location=Path("tests/test_md_files/fail.md"),
                 line_num=19,
             ),
-            err_msg=None,
-            warn_msg=None,
+            status=None,
+            msg=None,
         ),
         StatusInfo(
             link_info=LinkInfo(
@@ -200,8 +204,8 @@ def test_exclude_links(exclude_links):
                 location=Path("tests/test_md_files/fail.md"),
                 line_num=21,
             ),
-            err_msg="Error parsing link",
-            warn_msg=None,
+            status=Status.ERROR,
+            msg="Error parsing link",
         ),
     ]
     assert ret == ref
