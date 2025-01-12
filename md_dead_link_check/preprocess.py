@@ -16,6 +16,9 @@ RE_HTML_TAG_ID = r"<\w+\s+(?:[^>]*?\s+)?(?:id|name)=([\"'])(.*?)\1"
 RE_HTML_TAG_HREF = r"<\w+\s+(?:[^>]*?\s+)?href=([\"'])(.*?)\1"
 RE_SUB = r"[$`][^`]+?[$`]"
 
+MD_TAG_DISABLE = "<!-- md-dead-link-check: off -->"
+MD_TAG_ENABLE = "<!-- md-dead-link-check: on -->"
+
 
 @dataclass
 class LinkInfo:
@@ -83,6 +86,7 @@ def process_md_file(path: Path, root_dir: Path) -> MarkdownInfo:
     links: List[LinkInfo] = []
     with (root_dir / path).open(encoding="utf8") as stream:
         in_code_block = ""
+        disable_detection_links = False
         for line_num, line in enumerate(stream.readlines(), 1):
             striped_line = line.strip()
             # Skip code blocks that can be start ``` or ````
@@ -112,6 +116,22 @@ def process_md_file(path: Path, root_dir: Path) -> MarkdownInfo:
             # Skip $ and ` tags
             line = re.sub(RE_SUB, "", line)
 
+            # Detect id under a tag <a id="introduction"></a>
+            matches = re.findall(RE_HTML_TAG_ID, line)
+            for _, id in matches:
+                fragments.append(id.lower())
+
+            if MD_TAG_DISABLE in line:
+                disable_detection_links = True
+                continue
+
+            if MD_TAG_ENABLE in line:
+                disable_detection_links = False
+                continue
+
+            if disable_detection_links:
+                continue
+
             # Detect links
             copy_line = line  # Used to detect bare links
             matches = re.findall(RE_LINK, line)
@@ -127,11 +147,6 @@ def process_md_file(path: Path, root_dir: Path) -> MarkdownInfo:
                     links.append(LinkInfo(link, path, line_num))
                     copy_line = copy_line.replace(link, "")
 
-            # Detect id under a tag <a id="introduction"></a>
-            matches = re.findall(RE_HTML_TAG_ID, line)
-            for _, id in matches:
-                fragments.append(id.lower())
-
             # Detect links under a tag <a href="introduction"></a>
             matches = re.findall(RE_HTML_TAG_HREF, line)
             for _, link in matches:
@@ -144,6 +159,7 @@ def process_md_file(path: Path, root_dir: Path) -> MarkdownInfo:
                 if url.endswith("."):
                     url = url[:-1]
                 links.append(LinkInfo(url, path, line_num))
+
     return MarkdownInfo(path=path, fragments=fragments, links=links)
 
 

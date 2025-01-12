@@ -157,3 +157,66 @@ throttle_groups = 100
 throttle_delay = 20
 throttle_max_delay = 100
 ```
+
+## Rate Limiting and Request Throttling
+
+Websites often have limits on how many requests you can make within a certain period.
+If these limits are exceeded, the server will return a 429 Too Many Requests status code.
+
+### Failure Handling
+
+By default, the 429 status code is treated as a warning.
+You can modify this behavior and configure how the tool handles different status codes.
+
+```toml
+catch_response_codes = [404, 410, 429, 500]
+```
+
+### Throttling Mechanism
+
+To prevent your requests from overwhelming a website and potentially getting you blocked, this tool implements
+a throttling mechanism. This mechanism limits the number of requests that can be made in a given period.
+
+You can control the following parameters to fine-tune request throttling:
+
+```toml
+throttle_groups = 40  # default: 100
+throttle_delay = 30  # default: 20
+throttle_max_delay = 240  # default: 100
+```
+
+### Filter Links to Check
+
+By filtering out non-critical links and files, you can stay within rate limits while throttling requests.
+
+#### Exclude Links by Pattern
+
+Exclude specific URLs that match patterns:
+
+```toml
+exclude_links = ["https://github.com/AlexanderDokuchaev/md-dead-link-check/pull/*"]
+```
+
+#### Exclude Specific Files
+
+Prevent specific files (e.g., changelogs) from being checked:
+
+```toml
+exclude_files = ["CHANGELOG.md"]
+```
+
+#### Exclude Parts of Files Using Comments
+
+Ignore sections of files using a special comment `<!-- md-dead-link-check: off -->`.
+
+```md
+...
+
+<!-- md-dead-link-check: off -->
+
+All links will be ignored in this part of the file.
+
+<!-- md-dead-link-check: on -->
+
+...
+```

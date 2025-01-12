@@ -168,5 +168,10 @@ def test_process_md_file():
             location=Path("tests/test_md_files/a.md"),
             line_num=62,
         ),
+        LinkInfo(
+            link="https://github.com",
+            location=Path("tests/test_md_files/a.md"),
+            line_num=70,
+        ),
     ]
     assert md_info.links == ref_links
