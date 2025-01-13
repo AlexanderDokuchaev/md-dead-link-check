@@ -156,8 +156,7 @@ def process_md_file(path: Path, root_dir: Path) -> MarkdownInfo:
             # Detect simple urls without any tags
             matches = re.findall(RE_URL, copy_line)
             for url in matches:
-                if url.endswith("."):
-                    url = url[:-1]
+                url = re.sub(r"[,.:]+$", "", url)
                 links.append(LinkInfo(url, path, line_num))
 
     return MarkdownInfo(path=path, fragments=fragments, links=links)

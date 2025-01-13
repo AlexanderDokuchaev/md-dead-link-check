@@ -59,7 +59,7 @@ Some text
 <a href="mailto:example@example.example">mail</a>
 
 [ftp](ftp://example.example/example)
-https://github.com.
+https://github.com
 
 <!-- md-dead-link-check: off -->
 
@@ -67,4 +67,4 @@ https://github.com
 
 <!-- md-dead-link-check: on -->
 
-https://github.com
+https://github.com, https://github.com/:..
