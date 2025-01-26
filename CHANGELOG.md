@@ -1,6 +1,15 @@
 # Changelog
 
-## 1.0
+## 1.1.0
+
+- Add `--untrack` argument to check untracked files
+- Detection bare links
+- Add comments `<!-- md-dead-link-check: off -->` and `<!-- md-dead-link-check: on -->`
+- Add message about applied throttling
+- Add warning about detection "429: To Many Request"
+- Drop support python3.8
+
+## 1.0.0
 
 - Added throttling to avoid hitting rate limits on external services.
 - Filter `ftp` and `sftp` protocols for links.
