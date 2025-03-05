@@ -3,7 +3,12 @@ from dataclasses import field
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-import toml
+import sys
+
+if sys.version_info < (3, 11):
+    import tomli as tomllib
+else:
+    import tomllib
 
 PROJECT_NAME = "md_dead_link_check"
 
@@ -35,7 +40,8 @@ def get_config(root_dir: Path, config_path: Optional[Path]) -> Config:
     config = Config()
 
     if config_path.is_file():
-        pyproject_toml = toml.load(config_path)
+        with open(config_path, "rb") as handle:
+            pyproject_toml = tomllib.load(handle)
         toml_config: Dict[str, Any] = pyproject_toml.get("tool", {}).get(PROJECT_NAME, {})
 
         for key, value in toml_config.items():
