@@ -1,9 +1,8 @@
+import sys
 from dataclasses import dataclass
 from dataclasses import field
 from pathlib import Path
 from typing import Any, Dict, List, Optional
-
-import sys
 
 if sys.version_info < (3, 11):
     import tomli as tomllib
