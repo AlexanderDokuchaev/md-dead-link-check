@@ -1,7 +1,6 @@
 import os
 import sys
 from pathlib import Path
-from typing import List
 
 from md_dead_link_check.link_checker import Status
 from md_dead_link_check.link_checker import StatusInfo
@@ -39,7 +38,7 @@ class SpecSymbols:
                 setattr(self, key, "")
 
 
-def summary(status: List[StatusInfo], print_warn: bool, print_all: bool, no_color: bool) -> int:
+def summary(status: list[StatusInfo], print_warn: bool, print_all: bool, no_color: bool) -> int:
     """
     Print summary.
     Returns 0 if not found any error, otherwise 1.
@@ -69,7 +68,7 @@ def summary(status: List[StatusInfo], print_warn: bool, print_all: bool, no_colo
     if count_429:
         print(
             f"\n{specs.yellow}WARNING:{specs.clean} "
-            f"{count_429} link{'s' if count_429 > 1 else ''} returned \"429: Too Many Request\" respond code. "
+            f'{count_429} link{"s" if count_429 > 1 else ""} returned "429: Too Many Request" respond code. '
             f"This indicates that one of the servers is being accessed too frequently.\n"
             f"To more information visit "
             "https://github.com/AlexanderDokuchaev/md-dead-link-check/#rate-limiting-and-request-throttling"
@@ -77,14 +76,14 @@ def summary(status: List[StatusInfo], print_warn: bool, print_all: bool, no_colo
 
     if err_nums:
         cat_repeat = 0 if no_color else max(min(err_nums // 10, 5), 1)
-        print(f"{specs.fail}Found {err_nums} dead link{'s' if err_nums >1 else ''}" + specs.cat_fail * cat_repeat)
+        print(f"{specs.fail}Found {err_nums} dead link{'s' if err_nums > 1 else ''}" + specs.cat_fail * cat_repeat)
         return 1
     else:
         print(f"{specs.ok}Not found dead links{specs.cat_ok}")
         return 0
 
 
-def normalize_files(files: List[str], repo_dir: Path) -> List[str]:
+def normalize_files(files: list[str], repo_dir: Path) -> list[str]:
     """
     Set file names to relative git root directory.
     """
