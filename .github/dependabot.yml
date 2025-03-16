@@ -1,0 +1,17 @@
+# See help here: https://docs.github.com/en/free-pro-team@latest/github/administering-a-repository/enabling-and-disabling-version-updates
+
+version: 2
+updates:
+
+  # Github actions
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  # Python
+  - package-ecosystem: pip
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    versioning-strategy: increase-if-necessary
