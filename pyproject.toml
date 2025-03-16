@@ -38,7 +38,7 @@ Issues = "https://github.com/AlexanderDokuchaev/md-dead-link-check/issues"
 [project.optional-dependencies]
 dev = [
   "pytest==7.4.3",
-  "pre-commit==3.2.2"
+  "pre-commit==4.1.0"
 ]
 
 [build-system]
