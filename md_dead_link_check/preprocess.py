@@ -4,7 +4,6 @@ import re
 from dataclasses import dataclass
 from dataclasses import field
 from pathlib import Path
-from typing import Dict, List, Tuple
 
 from git import Repo
 
@@ -39,11 +38,11 @@ class LinkInfo:
 @dataclass
 class MarkdownInfo:
     path: Path
-    fragments: List[str] = field(default_factory=lambda: [])
-    links: List[LinkInfo] = field(default_factory=lambda: [])
+    fragments: list[str] = field(default_factory=lambda: [])
+    links: list[LinkInfo] = field(default_factory=lambda: [])
 
 
-def find_all_markdowns(all_files: List[str]) -> List[Path]:
+def find_all_markdowns(all_files: list[str]) -> list[Path]:
     """
     Filter markdown files.
     """
@@ -82,8 +81,8 @@ def process_header_to_fragment(header: str) -> str:
 
 
 def process_md_file(path: Path, root_dir: Path) -> MarkdownInfo:
-    fragments: List[str] = []
-    links: List[LinkInfo] = []
+    fragments: list[str] = []
+    links: list[LinkInfo] = []
     with (root_dir / path).open(encoding="utf8") as stream:
         in_code_block = ""
         disable_detection_links = False
@@ -162,11 +161,11 @@ def process_md_file(path: Path, root_dir: Path) -> MarkdownInfo:
     return MarkdownInfo(path=path, fragments=fragments, links=links)
 
 
-def preprocess_repository(untracked_files: bool) -> Tuple[Dict[str, MarkdownInfo], Path, List[Path]]:
+def preprocess_repository(untracked_files: bool) -> tuple[dict[str, MarkdownInfo], Path, list[Path]]:
     repo = Repo(search_parent_directories=True)
     root_dir = Path(repo.working_dir)
 
-    all_files: List[str] = repo.git.ls_files().splitlines()
+    all_files: list[str] = repo.git.ls_files().splitlines()
     if untracked_files:
         all_files += repo.untracked_files
 

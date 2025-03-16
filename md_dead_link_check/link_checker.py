@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from enum import Enum
 from fnmatch import fnmatch
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Optional
 from urllib.parse import urlsplit
 
 from aiohttp import ClientSession
@@ -106,7 +106,7 @@ async def process_link(data: LinkWithDelay, session: ClientSession, config: Conf
     return LinkStatus(link, Status.OK)
 
 
-async def async_check_links(links: List[LinkWithDelay], config: Config) -> List[LinkStatus]:
+async def async_check_links(links: list[LinkWithDelay], config: Config) -> list[LinkStatus]:
     async with ClientSession(trust_env=True) as session:
         ret = await asyncio.gather(*[process_link(li, session, config) for li in links])
     return ret
@@ -116,9 +116,9 @@ def calculate_delay(counter: int, config: Config) -> int:
     return min(counter // config.throttle_groups * config.throttle_delay, config.throttle_max_delay)
 
 
-def generate_delays_for_one_domain_links(links: List[str], config: Config) -> List[LinkWithDelay]:
-    domain_requests_counter: Dict[str, int] = defaultdict(int)
-    ret: List[LinkWithDelay] = []
+def generate_delays_for_one_domain_links(links: list[str], config: Config) -> list[LinkWithDelay]:
+    domain_requests_counter: dict[str, int] = defaultdict(int)
+    ret: list[LinkWithDelay] = []
 
     for link in links:
         domain = urlsplit(link).netloc
@@ -142,10 +142,10 @@ def generate_delays_for_one_domain_links(links: List[str], config: Config) -> Li
     return ret
 
 
-def check_web_links(md_data: Dict[str, MarkdownInfo], config: Config, files: List[str]) -> List[StatusInfo]:
-    ret: List[StatusInfo] = []
+def check_web_links(md_data: dict[str, MarkdownInfo], config: Config, files: list[str]) -> list[StatusInfo]:
+    ret: list[StatusInfo] = []
 
-    web_links: List[LinkInfo] = []
+    web_links: list[LinkInfo] = []
     for md_file in files:
         if md_file not in md_data:
             continue
@@ -179,9 +179,9 @@ def check_web_links(md_data: Dict[str, MarkdownInfo], config: Config, files: Lis
 
 
 def check_path_links(
-    md_data: Dict[str, MarkdownInfo], root_dir: Path, config: Config, files_in_repo: List[Path]
-) -> List[StatusInfo]:
-    ret: List[StatusInfo] = []
+    md_data: dict[str, MarkdownInfo], root_dir: Path, config: Config, files_in_repo: list[Path]
+) -> list[StatusInfo]:
+    ret: list[StatusInfo] = []
 
     for md_file, md_file_info in md_data.items():
         if any(fnmatch(md_file, p) for p in config.exclude_files):
@@ -244,9 +244,9 @@ def check_path_links(
 
 
 def check_all_links(
-    md_data: Dict[str, MarkdownInfo], config: Config, root_dir: Path, files: List[str], files_in_repo: List[Path]
-) -> List[StatusInfo]:
-    status_list: List[StatusInfo] = []
+    md_data: dict[str, MarkdownInfo], config: Config, root_dir: Path, files: list[str], files_in_repo: list[Path]
+) -> list[StatusInfo]:
+    status_list: list[StatusInfo] = []
     if config.check_web_links:
         status_list.extend(check_web_links(md_data, config, files))
     status_list.extend(check_path_links(md_data, root_dir, config, files_in_repo))

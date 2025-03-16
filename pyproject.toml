@@ -40,10 +40,6 @@ dev = [
   "pytest==7.4.3",
   "pre-commit==3.2.2"
 ]
-lint = [
-  "black==24.2.0",
-  "isort==5.13.2",
-]
 
 [build-system]
 requires = ["hatchling"]
@@ -58,14 +54,31 @@ packages = ["md_dead_link_check"]
 [project.scripts]
 md-dead-link-check = 'md_dead_link_check.__main__:main'
 
-[tool.black]
+[tool.ruff]
 line-length = 120
 
-[tool.isort]
-line_length = 120
-force_single_line = true
-profile = "black"
-single_line_exclusions = "typing"
+[tool.ruff.lint.isort]
+force-single-line = true
+
+[tool.ruff.lint]
+select = [
+    "EM",  # flake8-errmsg
+    "F", # pyflakes rules
+    "I",  # isort
+    "INP", # flake8-no-pep420
+    "ISC", # flake8-implicit-str-concat
+    "UP", # pyupgrade
+]
+extend-select = [
+    "SIM", # https://pypi.org/project/flake8-simplify
+]
+ignore = [
+    "UP007", # non-pep604-annotation-union
+    "UP045", # non-pep604-annotation-optional
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**.py" = ["INP"]
 
 [tool.mypy]
 follow_imports = "silent"
