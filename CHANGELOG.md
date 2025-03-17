@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.0
+
+- Use tomli (for python < '3.11) and tomllib (for python >= '3.11) instead of toml package (@szymonmaszke)
+- Use ruff formatter for code instead of black and isort.
+- Use commit hash instead of tag for version of actions.
+
 ## 1.1.0
 
 - Add `--untrack` argument to check untracked files
