@@ -134,7 +134,7 @@ def process_md_file(path: Path, root_dir: Path) -> MarkdownInfo:
                 # For case [![text](img_link)](link)
                 sub_line = re.sub(RE_LINK, "link", line)
                 matches2 = re.findall(RE_LINK, sub_line)
-                for _img_tag, _text, link, _titletitle in matches2:
+                for _img_tag, _text, link, _title in matches2:
                     links.append(LinkInfo(link, path, line_num))
                     copy_line = copy_line.replace(link, "")
 
