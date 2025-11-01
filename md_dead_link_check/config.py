@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from dataclasses import field
 from pathlib import Path
 from typing import Any
-from typing import Optional
 
 if sys.version_info < (3, 11):
     import tomli as tomllib
@@ -33,7 +32,7 @@ class Config:
     throttle_max_delay: int = 100
 
 
-def get_config(root_dir: Path, config_path: Optional[Path]) -> Config:
+def get_config(root_dir: Path, config_path: Path | None) -> Config:
     if not config_path:
         config_path = root_dir / "pyproject.toml"
     config = Config()

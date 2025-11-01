@@ -39,8 +39,7 @@ class SpecSymbols:
 
 
 def summary(status: list[StatusInfo], print_warn: bool, print_all: bool, no_color: bool) -> int:
-    """
-    Print summary.
+    """Print summary.
     Returns 0 if not found any error, otherwise 1.
     """
     specs = SpecSymbols()
@@ -78,15 +77,12 @@ def summary(status: list[StatusInfo], print_warn: bool, print_all: bool, no_colo
         cat_repeat = 0 if no_color else max(min(err_nums // 10, 5), 1)
         print(f"{specs.fail}Found {err_nums} dead link{'s' if err_nums > 1 else ''}" + specs.cat_fail * cat_repeat)
         return 1
-    else:
-        print(f"{specs.ok}Not found dead links{specs.cat_ok}")
-        return 0
+    print(f"{specs.ok}Not found dead links{specs.cat_ok}")
+    return 0
 
 
 def normalize_files(files: list[str], repo_dir: Path) -> list[str]:
-    """
-    Set file names to relative git root directory.
-    """
+    """Set file names to relative git root directory."""
     cwd = Path(os.getcwd())
     if cwd != repo_dir:
         return [(cwd / f).resolve().relative_to(repo_dir).as_posix() for f in files]

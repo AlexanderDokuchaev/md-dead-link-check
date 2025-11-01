@@ -6,3 +6,4 @@ MD013: false  # Line length
 MD033: false  # Inline HTML
 MD034: false  # no-bare-urls
 MD041: false  # First line
+MD059: false  # Link text should be descriptive
