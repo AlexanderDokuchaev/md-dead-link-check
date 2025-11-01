@@ -40,7 +40,7 @@ class MockResponse:
 
 
 @pytest.fixture(autouse=True)
-def session_mock(mocker: MockerFixture) -> ClientResponse:
+def session_mock(mocker: MockerFixture) -> None:
     async def get_side_effect(url, *args, **kwargs):
         if url in ERROR_404:
             raise ClientResponseError(
