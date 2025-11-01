@@ -1,6 +1,11 @@
 from pathlib import Path
 
 import pytest
+from aiohttp import ClientResponseError
+from aiohttp import RequestInfo
+from aiohttp.client_exceptions import NonHttpUrlClientError
+from pytest_mock import MockerFixture
+from yarl import URL
 
 from md_dead_link_check.config import Config
 from md_dead_link_check.link_checker import LinkWithDelay
@@ -12,6 +17,40 @@ from md_dead_link_check.link_checker import check_web_links
 from md_dead_link_check.link_checker import generate_delays_for_one_domain_links
 from md_dead_link_check.preprocess import LinkInfo
 from md_dead_link_check.preprocess import process_md_file
+
+ERROR_404 = [
+    "https://github.com/AlexanderDokuchaev/FAILELINK",
+    "https://github.com/AlexanderDokuchaev/FAILED",
+    "https://example.com/(bracket)",
+    "https://not_exist_github.githubcom/",
+]
+CLIENT_CONNECTION_ERROR = [
+    "error://urls/",
+]
+
+
+class MockResponse:
+    def __init__(self):
+        self.status = 200
+        self.reason = "OK"
+
+    def raise_for_status(self):
+        pass
+
+
+@pytest.fixture(autouse=True)
+def session_mock(mocker: MockerFixture) -> None:
+    async def get_side_effect(url, *args, **kwargs):
+        if url in ERROR_404:
+            raise ClientResponseError(
+                RequestInfo(url=url, method="GET", headers={}), (), status=404, message="Not Found"
+            )
+        if url in CLIENT_CONNECTION_ERROR:
+            raise NonHttpUrlClientError(URL(url))
+        return MockResponse()
+
+    mocker.patch("aiohttp.ClientSession.get", side_effect=get_side_effect)
+    mocker.patch("aiohttp.ClientSession.head", side_effect=get_side_effect)
 
 
 @pytest.mark.parametrize(
