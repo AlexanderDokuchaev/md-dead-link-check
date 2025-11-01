@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import pytest
-from aiohttp import ClientResponse
 from aiohttp import ClientResponseError
 from aiohttp import RequestInfo
 from aiohttp.client_exceptions import NonHttpUrlClientError
