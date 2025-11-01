@@ -26,9 +26,7 @@ class LinkInfo:
     line_num: int
 
     def get_location(self) -> str:
-        """
-        Returns location link in format path:line
-        """
+        """Returns location link in format path:line"""
         return f"{self.location}:{self.line_num}"
 
     def __lt__(self, other: LinkInfo) -> bool:
@@ -43,9 +41,7 @@ class MarkdownInfo:
 
 
 def find_all_markdowns(all_files: list[str]) -> list[Path]:
-    """
-    Filter markdown files.
-    """
+    """Filter markdown files."""
     ret = []
     for file_path in all_files:
         p = Path(file_path)
@@ -55,10 +51,7 @@ def find_all_markdowns(all_files: list[str]) -> list[Path]:
 
 
 def process_header_to_fragment(header: str) -> str:
-    """
-    Converts a Markdown header to a URL fragment.
-    """
-
+    """Converts a Markdown header to a URL fragment."""
     fragment = header.strip()
     fragment = re.sub(RE_HTML_TAG, "", fragment)
     while True:
@@ -76,8 +69,7 @@ def process_header_to_fragment(header: str) -> str:
     def filter_header_symbols(c: str) -> bool:
         return c.isalpha() or c.isdigit() or c in ["-", "_"]
 
-    fragment = "".join(filter(filter_header_symbols, fragment))
-    return fragment
+    return "".join(filter(filter_header_symbols, fragment))
 
 
 def process_md_file(path: Path, root_dir: Path) -> MarkdownInfo:
@@ -134,7 +126,7 @@ def process_md_file(path: Path, root_dir: Path) -> MarkdownInfo:
             # Detect links
             copy_line = line  # Used to detect bare links
             matches = re.findall(RE_LINK, line)
-            for img_tag, text, link, title in matches:
+            for _img_tag, _text, link, _title in matches:
                 links.append(LinkInfo(link, path, line_num))
                 copy_line = copy_line.replace(link, "")
 
@@ -142,7 +134,7 @@ def process_md_file(path: Path, root_dir: Path) -> MarkdownInfo:
                 # For case [![text](img_link)](link)
                 sub_line = re.sub(RE_LINK, "link", line)
                 matches2 = re.findall(RE_LINK, sub_line)
-                for img_tag, text, link, title in matches2:
+                for _img_tag, _text, link, _titletitle in matches2:
                     links.append(LinkInfo(link, path, line_num))
                     copy_line = copy_line.replace(link, "")
 

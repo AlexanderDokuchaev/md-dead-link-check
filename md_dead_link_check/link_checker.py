@@ -6,7 +6,6 @@ from dataclasses import dataclass
 from enum import Enum
 from fnmatch import fnmatch
 from pathlib import Path
-from typing import Optional
 from urllib.parse import urlsplit
 
 from aiohttp import ClientSession
@@ -38,7 +37,7 @@ class Status(int, Enum):
 class StatusInfo:
     link_info: LinkInfo
     status: Status
-    msg: Optional[str] = None
+    msg: str | None = None
 
     def __lt__(self, other: StatusInfo) -> bool:
         return self.status < other.status or (self.status == other.status and self.link_info < other.link_info)
@@ -48,7 +47,7 @@ class StatusInfo:
 class LinkStatus:
     link: str
     status: Status
-    msg: Optional[str] = None
+    msg: str | None = None
 
 
 @dataclass
@@ -58,8 +57,7 @@ class LinkWithDelay:
 
 
 async def process_link(data: LinkWithDelay, session: ClientSession, config: Config) -> LinkStatus:
-    """
-    Asynchronously processes a link to check its status and gather information.
+    """Asynchronously processes a link to check its status and gather information.
     Timeout is not interpolated as error, because timeout often occur due to temporary server issues and
     retrying the request might be more appropriate than treating it as an immediate failure.
     """
@@ -108,8 +106,7 @@ async def process_link(data: LinkWithDelay, session: ClientSession, config: Conf
 
 async def async_check_links(links: list[LinkWithDelay], config: Config) -> list[LinkStatus]:
     async with ClientSession(trust_env=True) as session:
-        ret = await asyncio.gather(*[process_link(li, session, config) for li in links])
-    return ret
+        return await asyncio.gather(*[process_link(li, session, config) for li in links])
 
 
 def calculate_delay(counter: int, config: Config) -> int:

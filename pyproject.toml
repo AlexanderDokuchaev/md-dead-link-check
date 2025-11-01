@@ -69,14 +69,14 @@ select = [
     "INP", # flake8-no-pep420
     "ISC", # flake8-implicit-str-concat
     "UP", # pyupgrade
+    "PERF", # perflint
+    "B", # flake8-bugbear
+    "RET", # flake8-return
 ]
 extend-select = [
     "SIM", # https://pypi.org/project/flake8-simplify
 ]
-ignore = [
-    "UP007", # non-pep604-annotation-union
-    "UP045", # non-pep604-annotation-optional
-]
+
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**.py" = ["INP"]
