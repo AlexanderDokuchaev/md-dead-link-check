@@ -3,12 +3,12 @@ name = "md_dead_link_check"
 description = "This is a lightweight and fast tool to help you keep your Markdown files free of broken links."
 readme = "README.md"
 version = "1.2.0"
-license = {text = "MIT"}
+license = { text = "MIT" }
 requires-python = ">=3.10"
 dependencies = [
   "tomli>=2.2.0; python_version < '3.11'",
   "GitPython>=3.1.0,<3.2.0",
-  "aiohttp>=3.10.11,<3.14.0"
+  "aiohttp>=3.13.3,<3.14.0",
 ]
 keywords = [
   "markdown",
@@ -36,21 +36,11 @@ Repository = "https://github.com/AlexanderDokuchaev/md-dead-link-check"
 Issues = "https://github.com/AlexanderDokuchaev/md-dead-link-check/issues"
 
 [project.optional-dependencies]
-dev = [
-  "pytest==9.0.2",
-  "pytest-mock==3.15.1",
-  "pre-commit==4.5.1",
-]
+dev = ["pytest==9.0.2", "pytest-mock==3.15.1", "pre-commit==4.5.1"]
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
-
-[tool.hatch.build.targets.sdist]
-only-include = ["md_dead_link_check"]
-
-[tool.hatch.build.targets.wheel]
-packages = ["md_dead_link_check"]
 
 [project.scripts]
 md-dead-link-check = 'md_dead_link_check.__main__:main'
@@ -63,20 +53,20 @@ force-single-line = true
 
 [tool.ruff.lint]
 select = [
-    "EM",  # flake8-errmsg
-    "F", # pyflakes rules
-    "I",  # isort
-    "INP", # flake8-no-pep420
-    "ISC", # flake8-implicit-str-concat
-    "UP", # pyupgrade
-    "PERF", # perflint
-    "B", # flake8-bugbear
-    "RET", # flake8-return
+  "E",    # pycodestyle rules
+  "EM",   # flake8-errmsg
+  "F",    # pyflakes rules
+  "I",    # isort
+  "INP",  # flake8-no-pep420
+  "ISC",  # flake8-implicit-str-concat
+  "UP",   # pyupgrade
+  "PERF", # perflint
+  "B",    # flake8-bugbear
+  "RET",  # flake8-return
 ]
 extend-select = [
-    "SIM", # https://pypi.org/project/flake8-simplify
+  "SIM", # https://pypi.org/project/flake8-simplify
 ]
-
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**.py" = ["INP"]
@@ -88,6 +78,4 @@ explicit_package_bases = true
 ignore_missing_imports = true
 
 [tool.md_dead_link_check]
-exclude_files = [
-  "tests/test_md_files/fail.md"
-]
+exclude_files = ["tests/test_md_files/fail.md"]
