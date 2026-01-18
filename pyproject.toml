@@ -6,29 +6,29 @@ version = "1.2.0"
 license = { text = "MIT" }
 requires-python = ">=3.10"
 dependencies = [
-    "tomli>=2.2.0; python_version < '3.11'",
-    "GitPython>=3.1.0,<3.2.0",
-    "aiohttp>=3.13.3,<3.14.0",
+  "tomli>=2.2.0; python_version < '3.11'",
+  "GitPython>=3.1.0,<3.2.0",
+  "aiohttp>=3.13.3,<3.14.0",
 ]
 keywords = [
-    "markdown",
-    "link checker",
-    "dead link",
-    "dead link checker",
-    "broken link",
-    "broken link checker",
-    "link health",
-    "documentation maintenance",
+  "markdown",
+  "link checker",
+  "dead link",
+  "dead link checker",
+  "broken link",
+  "broken link checker",
+  "link health",
+  "documentation maintenance",
 ]
 classifiers = [
-    "Development Status :: 4 - Beta",
-    "Intended Audience :: Developers",
-    "License :: OSI Approved :: Apache Software License",
-    "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
 ]
 
 [project.urls]
@@ -53,19 +53,19 @@ force-single-line = true
 
 [tool.ruff.lint]
 select = [
-    "E",    # pycodestyle rules
-    "EM",   # flake8-errmsg
-    "F",    # pyflakes rules
-    "I",    # isort
-    "INP",  # flake8-no-pep420
-    "ISC",  # flake8-implicit-str-concat
-    "UP",   # pyupgrade
-    "PERF", # perflint
-    "B",    # flake8-bugbear
-    "RET",  # flake8-return
+  "E",    # pycodestyle rules
+  "EM",   # flake8-errmsg
+  "F",    # pyflakes rules
+  "I",    # isort
+  "INP",  # flake8-no-pep420
+  "ISC",  # flake8-implicit-str-concat
+  "UP",   # pyupgrade
+  "PERF", # perflint
+  "B",    # flake8-bugbear
+  "RET",  # flake8-return
 ]
 extend-select = [
-    "SIM", # https://pypi.org/project/flake8-simplify
+  "SIM", # https://pypi.org/project/flake8-simplify
 ]
 
 [tool.ruff.lint.per-file-ignores]
