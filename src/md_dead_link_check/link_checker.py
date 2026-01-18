@@ -110,7 +110,7 @@ async def async_check_links(links: list[LinkWithDelay], config: Config) -> list[
 
 
 def calculate_delay(counter: int, config: Config) -> int:
-    return min(counter // config.throttle_groups * config.throttle_delay, config.throttle_max_delay)
+    return int(min(counter // config.throttle_groups * config.throttle_delay, config.throttle_max_delay))
 
 
 def generate_delays_for_one_domain_links(links: list[str], config: Config) -> list[LinkWithDelay]:

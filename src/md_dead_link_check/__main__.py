@@ -55,7 +55,7 @@ def main() -> int:
     status_list = check_all_links(md_data, config, repo_dir, files, files_in_repo)
     err_num = summary(status_list, args.warn, args.all, args.no_color)
 
-    return min(err_num, 1)
+    return int(err_num != 0)
 
 
 if __name__ == "__main__":
