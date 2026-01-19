@@ -3,6 +3,8 @@ from pathlib import Path
 import pytest
 
 from md_dead_link_check.preprocess import LinkInfo
+from md_dead_link_check.preprocess import detect_headers
+from md_dead_link_check.preprocess import detect_links
 from md_dead_link_check.preprocess import find_all_markdowns
 from md_dead_link_check.preprocess import process_header_to_fragment
 from md_dead_link_check.preprocess import process_md_file
@@ -180,3 +182,47 @@ def test_process_md_file():
         ),
     ]
     assert md_info.links == ref_links
+
+
+@pytest.mark.parametrize(
+    "line, ref",
+    (
+        ("# 1", "1"),
+        ("## Header 1", "header-1"),
+        ("### Header 1", "header-1"),
+        ("#### Header 1", "header-1"),
+        ('<a id="head">', "head"),
+    ),
+)
+def test_detect_headers(line, ref):
+    fragments = []
+    detect_headers(line, fragments)
+    assert ref == fragments[0]
+
+
+def test_same_header():
+    fragments = []
+    detect_headers("## Header", fragments)
+    detect_headers("## Header", fragments)
+    detect_headers("## Header", fragments)
+    assert fragments == ["header", "header-1", "header-2"]
+
+
+@pytest.mark.parametrize(
+    "line, ref",
+    (
+        ("https://link", ["https://link"]),
+        ("http://link", ["http://link"]),
+        ("[1](link)", ["link"]),
+        ("![1](link)", ["link"]),
+        ("[![1](img)](link)", ["img"]),
+        ("link http://link and https://link", ["http://link", "https://link"]),
+        ("<http://link>", ["http://link"]),
+        # ("<http://link(br)>", ["http://link(br)"]),
+        # ("[1](<http://link(br)>)", ["http://link(br)"]),
+        # ("[![1](<http://link(br)>))](link)", ["http://link(br)", "link"]),
+    ),
+)
+def test_detect_links(line, ref):
+    ret = detect_links(line)
+    assert ret == ref

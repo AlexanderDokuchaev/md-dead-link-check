@@ -72,6 +72,57 @@ def process_header_to_fragment(header: str) -> str:
     return "".join(filter(filter_header_symbols, fragment))
 
 
+def detect_headers(line: str, fragments: list[str]) -> None:
+    """Detect headers in a line and add to the list."""
+    res = re.match(RE_HEADER, line)
+    if res:
+        _fragment = process_header_to_fragment(res.group(1))
+        fragment = _fragment
+        repeat = 0
+        while fragment in fragments:
+            repeat += 1
+            fragment = f"{_fragment}-{repeat}"
+        fragments.append(fragment)
+
+    # Skip $ and ` tags
+    line = re.sub(RE_SUB, "", line)
+
+    # Detect id under a tag <a id="introduction"></a>
+    matches = re.findall(RE_HTML_TAG_ID, line)
+    for _, id in matches:
+        fragments.append(id.lower())
+
+
+def detect_links(line: str) -> list[str]:
+    """Detect links and paths in a line and return list of links."""
+    ret: list[str] = []
+    matches = re.findall(RE_LINK, line)
+    for _img_tag, _text, link, _title in matches:
+        ret.append(link)
+        line = line.replace(link, "")
+
+    if matches:
+        # For case [![text](img_link)](link)
+        sub_line = re.sub(RE_LINK, "link", line)
+        matches2 = re.findall(RE_LINK, sub_line)
+        for _img_tag, _text, link, _title in matches2:
+            ret.append(link)
+            line = line.replace(link, "")
+
+    # Detect links under a tag <a href="introduction"></a>
+    matches = re.findall(RE_HTML_TAG_HREF, line)
+    for _, link in matches:
+        ret.append(link)
+        line = line.replace(link, "")
+
+    # Detect simple urls without any tags
+    matches = re.findall(RE_URL, line)
+    for url in matches:
+        url = re.sub(r"[,.:]+$", "", url)
+        ret.append(url)
+    return ret
+
+
 def process_md_file(path: Path, root_dir: Path) -> MarkdownInfo:
     fragments: list[str] = []
     links: list[LinkInfo] = []
@@ -94,23 +145,10 @@ def process_md_file(path: Path, root_dir: Path) -> MarkdownInfo:
                 continue
 
             # Detect headers
-            res = re.match(RE_HEADER, line)
-            if res:
-                _fragment = process_header_to_fragment(res.group(1))
-                fragment = _fragment
-                repeat = 0
-                while fragment in fragments:
-                    repeat += 1
-                    fragment = f"{_fragment}-{repeat}"
-                fragments.append(fragment)
+            detect_headers(line, fragments)
 
             # Skip $ and ` tags
             line = re.sub(RE_SUB, "", line)
-
-            # Detect id under a tag <a id="introduction"></a>
-            matches = re.findall(RE_HTML_TAG_ID, line)
-            for _, id in matches:
-                fragments.append(id.lower())
 
             if MD_TAG_DISABLE in line:
                 disable_detection_links = True
@@ -124,31 +162,8 @@ def process_md_file(path: Path, root_dir: Path) -> MarkdownInfo:
                 continue
 
             # Detect links
-            copy_line = line  # Used to detect bare links
-            matches = re.findall(RE_LINK, line)
-            for _img_tag, _text, link, _title in matches:
-                links.append(LinkInfo(link, path, line_num))
-                copy_line = copy_line.replace(link, "")
-
-            if matches:
-                # For case [![text](img_link)](link)
-                sub_line = re.sub(RE_LINK, "link", line)
-                matches2 = re.findall(RE_LINK, sub_line)
-                for _img_tag, _text, link, _title in matches2:
-                    links.append(LinkInfo(link, path, line_num))
-                    copy_line = copy_line.replace(link, "")
-
-            # Detect links under a tag <a href="introduction"></a>
-            matches = re.findall(RE_HTML_TAG_HREF, line)
-            for _, link in matches:
-                links.append(LinkInfo(link, path, line_num))
-                copy_line = copy_line.replace(link, "")
-
-            # Detect simple urls without any tags
-            matches = re.findall(RE_URL, copy_line)
-            for url in matches:
-                url = re.sub(r"[,.:]+$", "", url)
-                links.append(LinkInfo(url, path, line_num))
+            links_in_line = detect_links(line)
+            links.extend(LinkInfo(link, path, line_num) for link in links_in_line)
 
     return MarkdownInfo(path=path, fragments=fragments, links=links)
 
