@@ -20,6 +20,7 @@ MD_TAG_DISABLE = "<!-- md-dead-link-check: off -->"
 MD_TAG_ENABLE = "<!-- md-dead-link-check: on -->"
 PLACEHOLDER = "MD_DEAD_LINK_CHECK_PLACEHOLDER"
 
+
 @dataclass
 class LinkInfo:
     link: str
