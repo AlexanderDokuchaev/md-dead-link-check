@@ -9,6 +9,7 @@ from git import Repo
 
 RE_HEADER = r"^(?:\s*[-+*]\s+|)[#]{1,6}\s*(.*?)\s*[#]*$"
 RE_URL = r"(http[s]?://[^>)\]\s\"]+)"
+RE_URL_IN_BRACKETS = r"<(http[s]?://[^>\s]+)>"
 RE_LINK = r"([!]{0,1})\[([^\]!]*)\]\(([^()\s]+(?:\([^()\s]*\))*)\s*(.*?)\)"
 RE_HTML_TAG = r"</?\w+[^>]*>"
 RE_HTML_TAG_ID = r"<\w+\s+(?:[^>]*?\s+)?(?:id|name)=([\"'])(.*?)\1"
@@ -17,7 +18,7 @@ RE_SUB = r"[$`][^`]+?[$`]"
 
 MD_TAG_DISABLE = "<!-- md-dead-link-check: off -->"
 MD_TAG_ENABLE = "<!-- md-dead-link-check: on -->"
-
+PLACEHOLDER = "MD_DEAD_LINK_CHECK_PLACEHOLDER"
 
 @dataclass
 class LinkInfo:
@@ -95,18 +96,26 @@ def detect_headers(line: str, fragments: list[str]) -> None:
 
 def detect_links(line: str) -> list[str]:
     """Detect links and paths in a line and return list of links."""
-    ret: list[str] = []
+    ret: list[str] = list()
+
+    matches = re.findall(RE_URL_IN_BRACKETS, line)
+    for link in matches:
+        ret.append(link)
+        line = line.replace(f"<{link}>", PLACEHOLDER)
+
     matches = re.findall(RE_LINK, line)
     for _img_tag, _text, link, _title in matches:
-        ret.append(link)
-        line = line.replace(link, "")
+        if link != PLACEHOLDER:
+            ret.append(link)
+        line = line.replace(link, PLACEHOLDER)
 
     if matches:
         # For case [![text](img_link)](link)
         sub_line = re.sub(RE_LINK, "link", line)
         matches2 = re.findall(RE_LINK, sub_line)
         for _img_tag, _text, link, _title in matches2:
-            ret.append(link)
+            if link != PLACEHOLDER:
+                ret.append(link)
             line = line.replace(link, "")
 
     # Detect links under a tag <a href="introduction"></a>
@@ -120,7 +129,8 @@ def detect_links(line: str) -> list[str]:
     for url in matches:
         url = re.sub(r"[,.:]+$", "", url)
         ret.append(url)
-    return ret
+
+    return list(ret)
 
 
 def process_md_file(path: Path, root_dir: Path) -> MarkdownInfo:
