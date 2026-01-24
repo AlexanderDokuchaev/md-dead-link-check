@@ -96,7 +96,7 @@ def detect_headers(line: str, fragments: list[str]) -> None:
 
 def detect_links(line: str) -> list[str]:
     """Detect links and paths in a line and return list of links."""
-    ret: list[str] = list()
+    ret: list[str] = []
 
     matches = re.findall(RE_URL_IN_BRACKETS, line)
     for link in matches:
@@ -130,7 +130,7 @@ def detect_links(line: str) -> list[str]:
         url = re.sub(r"[,.:]+$", "", url)
         ret.append(url)
 
-    return list(ret)
+    return ret
 
 
 def process_md_file(path: Path, root_dir: Path) -> MarkdownInfo:
