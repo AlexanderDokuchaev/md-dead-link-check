@@ -83,7 +83,7 @@ def detect_headers(line: str, fragments: list[str]) -> None:
     line = re.sub(r"\\<(.*?)\\>", r"\1", line)
 
     # Keep links in < >
-    # If it not starts from http, markdown parser will ignored it
+    # If it does not start with http, the markdown parser will ignore it
     # Example:
     #    '# Header <T>' becomes 'header-'
     line = re.sub(r"(?<!\\)<(http[s]?://[^>\s]+)(?<!\\)>", r"\1", line)
