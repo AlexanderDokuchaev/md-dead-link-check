@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from pathlib import Path
 
 import pytest
@@ -184,20 +185,38 @@ def test_process_md_file():
     assert md_info.links == ref_links
 
 
+@dataclass
+class HeaderTestCase:
+    line: str
+    header: str
+
+    def __str__(self):
+        return self.header
+
+
 @pytest.mark.parametrize(
-    "line, ref",
+    "param",
     (
-        ("# 1", "1"),
-        ("## Header 1", "header-1"),
-        ("### Header 1", "header-1"),
-        ("#### Header 1", "header-1"),
-        ('<a id="head">', "head"),
+        HeaderTestCase("# 1", "1"),
+        HeaderTestCase("## Header 1", "header-1"),
+        HeaderTestCase("### Header 1", "header-1"),
+        HeaderTestCase("#### Header 1", "header-1"),
+        HeaderTestCase('<a id="head">', "head"),
+        HeaderTestCase("# head<T>", "head"),
+        HeaderTestCase("# head\<T\>", "headt"),
+        HeaderTestCase("# h http://link", "h-httplink"),
+        HeaderTestCase("# h <https://link>", "h-httpslink"),
+        HeaderTestCase("# h <http://link.com/(ver)>", "h-httplinkcomver"),
+        HeaderTestCase("# h <asd> ", "h-"),
+        HeaderTestCase("# h \<asd\>", "h-asd"),
+        HeaderTestCase("# h http://link <link> \<t\>   <http://link>", "h-httplink--t---httplink"),
     ),
+    ids=str,
 )
-def test_detect_headers(line, ref):
+def test_detect_headers(param: HeaderTestCase):
     fragments = []
-    detect_headers(line, fragments)
-    assert ref == fragments[0]
+    detect_headers(param.line, fragments)
+    assert param.header == fragments[0]
 
 
 def test_same_header():

@@ -76,6 +76,18 @@ def process_header_to_fragment(header: str) -> str:
 
 def detect_headers(line: str, fragments: list[str]) -> None:
     """Detect headers in a line and add to the list."""
+
+    # Keep text in \< \>
+    # Example:
+    #    '# Header \<T\>' becomes 'header-t'
+    line = re.sub(r"\\<(.*?)\\>", r"\1", line)
+
+    # Keep links in < >
+    # If it not starts from http, markdown parser will ignored it
+    # Example:
+    #    '# Header <T>' becomes 'header-'
+    line = re.sub(r"(?<!\\)<(http[s]?://[^>\s]+)(?<!\\)>", r"\1", line)
+
     res = re.match(RE_HEADER, line)
     if res:
         _fragment = process_header_to_fragment(res.group(1))
