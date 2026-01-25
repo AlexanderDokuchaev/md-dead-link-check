@@ -215,12 +215,12 @@ def test_same_header():
         ("http://link", ["http://link"]),
         ("[1](link)", ["link"]),
         ("![1](link)", ["link"]),
-        ("[![1](img)](link)", ["img"]),
-        ("link http://link and https://link", ["http://link", "https://link"]),
+        ("[![1](img)](link)", ["img", "link"]),
+        ("link http://link and https://link2", ["http://link", "https://link2"]),
         ("<http://link>", ["http://link"]),
-        # ("<http://link(br)>", ["http://link(br)"]),
-        # ("[1](<http://link(br)>)", ["http://link(br)"]),
-        # ("[![1](<http://link(br)>))](link)", ["http://link(br)", "link"]),
+        ("<http://link(br)>", ["http://link(br)"]),
+        ("[1](<http://link(br)>)", ["http://link(br)"]),
+        ("[![1](<http://link(br)>)](link)", ["http://link(br)", "link"]),
     ),
 )
 def test_detect_links(line, ref):
