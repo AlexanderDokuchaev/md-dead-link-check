@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.0
+
+- Fix link parsing when using angle-bracket syntax
+- Drop python3.9 support
+- Use src layout for package
+
 ## 1.2.0
 
 - Use tomli (for python < '3.11) and tomllib (for python >= '3.11) instead of toml package (@szymonmaszke)
