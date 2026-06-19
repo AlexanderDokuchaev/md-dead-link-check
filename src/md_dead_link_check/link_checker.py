@@ -228,8 +228,7 @@ def check_path_links(
                         ret.append(StatusInfo(md_link, Status.ERROR, MSG_FRAGMENT_NOT_FOUND))
                         continue
                 else:
-                    # Not markdown file
-                    if not any(f.as_posix().startswith(rel_path.as_posix()) for f in files_in_repo):
+                    if not any(f == rel_path or rel_path in f.parents for f in files_in_repo):
                         if rel_path.exists():
                             ret.append(StatusInfo(md_link, Status.ERROR, MSG_PATH_NOT_ADDED))
                         else:
