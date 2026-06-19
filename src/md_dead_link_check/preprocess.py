@@ -10,7 +10,7 @@ from git import Repo
 RE_HEADER = r"^(?:\s*[-+*]\s+|)[#]{1,6}\s*(.*?)\s*[#]*$"
 RE_URL = r"(http[s]?://[^>)\]\s\"]+)"
 RE_URL_IN_BRACKETS = r"<(http[s]?://[^>\s]+)>"
-RE_LINK = r"([!]{0,1})\[([^\]!]*)\]\(([^()\s]+(?:\([^()\s]*\))*)\s*(.*?)\)"
+RE_LINK = r"([!]{0,1})\[([^\]!]*)\]\((<[^>]*>|[^()\s]+(?:\([^()\s]*\))*)\s*(.*?)\)"
 RE_HTML_TAG = r"</?\w+[^>]*>"
 RE_HTML_TAG_ID = r"<\w+\s+(?:[^>]*?\s+)?(?:id|name)=([\"'])(.*?)\1"
 RE_HTML_TAG_HREF = r"<\w+\s+(?:[^>]*?\s+)?href=([\"'])(.*?)\1"
@@ -119,7 +119,7 @@ def detect_links(line: str) -> list[str]:
     matches = re.findall(RE_LINK, line)
     for _img_tag, _text, link, _title in matches:
         if link != PLACEHOLDER:
-            ret.append(link)
+            ret.append(link[1:-1] if link.startswith("<") and link.endswith(">") else link)
         line = line.replace(link, PLACEHOLDER)
 
     if matches:
@@ -128,7 +128,7 @@ def detect_links(line: str) -> list[str]:
         matches2 = re.findall(RE_LINK, sub_line)
         for _img_tag, _text, link, _title in matches2:
             if link != PLACEHOLDER:
-                ret.append(link)
+                ret.append(link[1:-1] if link.startswith("<") and link.endswith(">") else link)
             line = line.replace(link, "")
 
     # Detect links under a tag <a href="introduction"></a>
