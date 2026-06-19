@@ -229,7 +229,7 @@ def check_path_links(
                         continue
                 else:
                     if not any(f == rel_path or rel_path in f.parents for f in files_in_repo):
-                        if rel_path.exists():
+                        if abs_path.exists():
                             ret.append(StatusInfo(md_link, Status.ERROR, MSG_PATH_NOT_ADDED))
                         else:
                             ret.append(StatusInfo(md_link, Status.ERROR, MSG_PATH_NOT_FOUND))
