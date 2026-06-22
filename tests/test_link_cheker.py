@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from pathlib import Path
 
 import pytest
@@ -157,6 +158,89 @@ def test_fails():
         ),
     ]
     assert ret == ref
+
+
+@dataclass
+class PathLinkCase:
+    name: str
+    link: str
+    files_in_repo: list[Path]
+    status: Status
+    msg: str | None = None
+
+    def __str__(self) -> str:
+        return self.name
+
+
+@pytest.mark.parametrize(
+    "case",
+    (
+        PathLinkCase(
+            "prefix_of_filename",
+            "dir/file.pn",
+            [Path("tests/test_md_files/dir/file.png")],
+            Status.ERROR,
+            "Path not found",
+        ),
+        PathLinkCase(
+            "file_without_extension",
+            "dir/file",
+            [Path("tests/test_md_files/dir/file.png")],
+            Status.ERROR,
+            "Path not found",
+        ),
+        PathLinkCase(
+            "prefix_of_dirname",
+            "di",
+            [Path("tests/test_md_files/dir/file.png")],
+            Status.ERROR,
+            "Path not found",
+        ),
+        PathLinkCase(
+            "dir_prefix_of_other_dir",
+            "dir",
+            [Path("tests/test_md_files/dirty/file.png")],
+            Status.ERROR,
+            "Path not found",
+        ),
+        PathLinkCase(
+            "exact_file",
+            "dir/file.png",
+            [Path("tests/test_md_files/dir/file.png")],
+            Status.OK,
+            None,
+        ),
+        PathLinkCase(
+            "exact_file_among_many",
+            "dir/file.png",
+            [Path("tests/test_md_files/other/img.png"), Path("tests/test_md_files/dir/file.png")],
+            Status.OK,
+            None,
+        ),
+        PathLinkCase(
+            "directory",
+            "dir",
+            [Path("tests/test_md_files/dir/file.png")],
+            Status.OK,
+            None,
+        ),
+        PathLinkCase(
+            "nested_directory",
+            "a/b",
+            [Path("tests/test_md_files/a/b/c/file.png")],
+            Status.OK,
+            None,
+        ),
+    ),
+    ids=str,
+)
+def test_path_link_prefix_not_silently_accepted(case: PathLinkCase):
+    root_dir = Path(__file__).parent.parent
+    md_path = "tests/test_md_files/prefix.md"
+    link_info = LinkInfo(case.link, Path(md_path), 1)
+    md_data = {md_path: MarkdownInfo(Path(md_path), links=[link_info])}
+    ret = check_all_links(md_data, Config(check_web_links=False), root_dir, [md_path], case.files_in_repo)
+    assert ret == [StatusInfo(link_info, case.status, case.msg)]
 
 
 def test_exclude_files():
